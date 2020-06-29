@@ -18,7 +18,7 @@
   set_fact:
     iam_user: "{{ (create_user.stdout if get_user.rc == 255 else get_user.stdout)  | from_json }}"
 
-- name: get deploy user policy
+- name: get build user policy
   command: >
     {{ aws_cmd }} iam get-user-policy --user-name {{ build_user_name }}
     --policy-name {{ aws_ecs_policy_name }} --query PolicyDocument
@@ -43,7 +43,7 @@
         content: "{{ aws_ecs_policy | to_json }}"
         dest: "{{ policy_json.path }}"
 
-    - name: put deploy user policy
+    - name: put build user policy
       command: >
         {{ aws_cmd }} iam  put-user-policy --user-name {{ build_user_name }}
         --policy-name {{ aws_ecs_policy_name }} --policy-document file://{{ policy_json.path }}

@@ -60,3 +60,16 @@ aws_ecs_policy:
         - "ssm:PutParameter"
       Resource:
         - "arn:aws:ssm:{{ aws_region }}:{{ aws_account_id }}:parameter/{{ account }}/api-deployment/{{ service_id }}/*"
+    - Sid: secretsmanagerget1
+      Effect: Allow
+      Action:
+        - "secretsmanager:GetSecretValue"
+      Resource: "*"
+      Condition:
+        ForAnyValue:StringLike:
+          secretsmanager:ResourceTag/AllowedServices1:
+            - "{{ service_id }}"
+            - "{{ service_id }} *"
+            - "* {{ service_id }} *"
+            - "* {{ service_id }}"
+            - "all"
