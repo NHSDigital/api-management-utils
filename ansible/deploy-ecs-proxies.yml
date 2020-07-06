@@ -7,6 +7,7 @@
     account:  "{{ lookup('env','account') }}"
     service_id: "{{ lookup('env','service_id') }}"
     APIGEE_ENVIRONMENT: "{{ lookup('env','APIGEE_ENVIRONMENT') }}"
+    SANDBOX: "{{ lookup('env','SANDBOX') }}"
     pr_number: "{{ lookup('env','pr_number') }}"
     APIGEE_HOSTNAME: "{{ '' if APIGEE_ENVIRONMENT == 'prod' else APIGEE_ENVIRONMENT + '.' }}api.service.nhs.uk"
     apigee_uri: "https://{{ APIGEE_HOSTNAME }}"
@@ -29,6 +30,11 @@
       fail:
         msg: "APIGEE_ENVIRONMENT not set"
       when: not APIGEE_ENVIRONMENT
+
+    - name: check SANDBOX
+      fail:
+        msg: "SANDBOX not set"
+      when: not SANDBOX
 
     - name: include vars
       include_vars:
