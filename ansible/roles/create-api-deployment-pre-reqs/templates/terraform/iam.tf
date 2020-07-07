@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "ecs-execution-role" {
     ]
 
     resources = [
-      "arn:aws:ssm:${local.region}:${local.account_id}:parameter/${var.account}/platform-common/*",
+      "arn:aws:ssm:${local.region}:${local.account_id}:parameter/${var.account}/platform-common/splunk/*",
       "arn:aws:ssm:${local.region}:${local.account_id}:parameter/${var.account}/api-deployment/${var.service_id}/*"
     ]
   }
