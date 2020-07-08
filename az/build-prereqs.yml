@@ -10,14 +10,14 @@ steps:
     inputs:
       versionSpec: '3.8'
 
-  - task: Cache@2
-    displayName: "Cache Utils python Dependencies"
-    inputs:
-      key:  nhsd-utils-pyenv-3 | $(Agent.OS) | ${{ parameters.utils_dir }}/poetry.lock
-      path: "${{ parameters.utils_dir }}/.venv"
-      restoreKeys: |
-        nhsd-utils-pyenv-3 | $(Agent.OS) | ${{ parameters.utils_dir }}/poetry.lock
-        nhsd-utils-pyenv-3 | $(Agent.OS)
+  # - task: Cache@2
+  #   displayName: "Cache Utils python Dependencies"
+  #   inputs:
+  #     key:  nhsd-utils-pyenv-3 | $(Agent.OS) | ${{ parameters.utils_dir }}/poetry.lock
+  #     path: "${{ parameters.utils_dir }}/.venv"
+  #     restoreKeys: |
+  #       nhsd-utils-pyenv-3 | $(Agent.OS) | ${{ parameters.utils_dir }}/poetry.lock
+  #       nhsd-utils-pyenv-3 | $(Agent.OS)
 
   - bash: |
       if ! hash pip3 2>/dev/null; then
