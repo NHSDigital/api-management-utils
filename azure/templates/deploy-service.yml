@@ -151,7 +151,7 @@ steps:
       set -euo pipefail
 
       export PING="${{ parameters.service_name }}@${{ parameters.apigee_environment }}=http_2xx https://${{ parameters.apigee_environment }}.api.service.nhs.uk${{ parameters.service_base_path }}/_ping"
-      curl -X POST -H "apikey: ${{ parameters.api_key }}" "https://${{ parameters.apigee_environment }}.api.service.nhs.uk/monitoring-sd/service" -d "{\"${{ parameters.service_name }}\": {\"${{ parameters.apigee_environment }}\": [\"${PING}\"]}}"
+      curl -X POST -H "apikey: ${{ parameters.api_key }}" "https://internal-dev.api.service.nhs.uk/monitoring-sd/service" -d "{\"${{ parameters.service_name }}\": {\"${{ parameters.apigee_environment }}\": [\"${PING}\"]}}"
     displayName: Add monitoring endpoints
 
   - ${{ each post_deploy_step in parameters.post_deploy }}:
