@@ -5,6 +5,7 @@ parameters:
   - name: product_display_name
   - name: product_description
   - name: service_name
+  - name: api_key
   - name: short_service_name
   - name: fully_qualified_service_name
   - name: apigee_environment
@@ -146,6 +147,12 @@ steps:
       poetry run ansible-playbook deploy-apigee-proxy.yml
       poetry run ansible-playbook deploy-apigee-product.yml
     displayName: 'Deploy Proxy and Product'
+  - bash: |
+      set -euo pipefail
+
+      export PING="${{ parameters.service_name }}@${{ parameters.apigee_environment }}=http_2xx https://${{ parameters.apigee_environment }}.api.service.nhs.uk${{ parameters.service_base_path }}/_ping"
+      curl -X POST -H "apikey: ${{ parameters.api_key }}" "https://${{ parameters.apigee_environment }}.api.service.nhs.uk/monitoring-sd/service" -d "{\"${{ parameters.service_name }}\": {\"${{ parameters.apigee_environment }}\": [\"${PING}\"]}}"
+    displayName: Add monitoring endpoints
 
   - ${{ each post_deploy_step in parameters.post_deploy }}:
     - ${{ post_deploy_step}}

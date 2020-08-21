@@ -143,3 +143,5 @@ dmypy.json
 .envrc
 .direnv
 env
+
+.DS_Store
