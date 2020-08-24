@@ -64,4 +64,5 @@
     body: "{{ monitoring_body }}"
     body_format: "json"
     retries: 3
+  when: ADD_MONITORING == "true"
 
