@@ -54,3 +54,14 @@
   fail:
     msg: "Incorrect revision {{ proxy_deployed_revision }}, was expecting {{ revision }}"
   when: NO_PING != "true" and proxy_deployed_revision != revision
+
+- name: Add monitoring endpoint
+  uri:
+    url: "https://internal-dev.api.service.nhs.uk/monitoring-sd/service"
+    method: "POST"
+    headers:
+      apikey: "{{ MONITORING_API_KEY }}"
+    body: "{{ monitoring_body }}"
+    body_format: "json"
+    retries: 3
+
