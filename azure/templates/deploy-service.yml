@@ -53,6 +53,13 @@ steps:
     displayName: "Install utils pre-requisites"
 
   - bash: |
+      brew install tfenv
+      tfenv install 0.12.29
+      tfenv use 0.12.29
+    displayName: setup terraform
+    condition: and(succeeded(), eq(variables['build_containers'], 'true'))
+
+  - bash: |
       echo "Deploying ${{ parameters.service_name }} artifact $(SERVICE_ARTIFACT_NAME) as ${{ parameters.fully_qualified_service_name }} to ${{ parameters.service_base_path }} on $(ENV_URL)"
     displayName: 'Deploy Info'
 

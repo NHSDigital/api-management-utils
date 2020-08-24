@@ -21,6 +21,13 @@
   set_fact:
     ns_service_tuples: "{{ (get_service_namespaced_services.stdout if (target_service_id | length) > 0 else get_all_namespaced_services.stdout) | from_json }}"
 
+- name: get terraform version
+  command: terraform --version
+  register: terraform_version
+
+- name: print terraform version
+  debug: msg="{{ terraform_version.stdout }}"
+
 - name: maybe remove deployment
   include: remove-ecs-deployment.yml
   with_list: "{{ ns_service_tuples }}"

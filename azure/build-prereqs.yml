@@ -9,6 +9,12 @@ steps:
       versionSpec: '3.8'
 
   - bash: |
+      brew install tfenv
+      tfenv install 0.12.29
+      tfenv use 0.12.29
+    displayName: setup terraform
+
+  - bash: |
       if ! hash pip3 2>/dev/null; then
         sudo apt-get -yq install python3-pip
       fi
