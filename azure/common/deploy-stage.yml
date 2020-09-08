@@ -76,9 +76,9 @@ stages:
                     path: "$(Pipeline.Workspace)/s/${{ parameters.service_name }}"
 
                 - bash: |
-                    echo $(Build.SourceVersion)
-                    echo $(Build.SourceVersionMessage)
-                    echo $(resources.pipeline.build_pipeline.sourceCommit)
+                    echo "$(Build.SourceVersion)"
+                    echo "$(Build.SourceVersionMessage)"
+                    echo "$(resources.pipeline.build_pipeline.sourceCommit)"
 
                 - task: DownloadSecureFile@1
                   name: aws_config
@@ -121,7 +121,7 @@ stages:
 
                 - ${{ if parameters.notify }}:
                   - bash: |
-                      export COMMIT_SHA=`echo $(Build.SourceVersionMessage) | cut -d' ' -f2`
+                      export COMMIT_SHA=`echo "$(Build.SourceVersionMessage)" | cut -d' ' -f2`
                       echo "##vso[task.setvariable variable=COMMIT_SHA]$COMMIT_SHA"
                     displayName: Set COMMIT_SHA
 
