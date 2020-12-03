@@ -4,6 +4,8 @@ parameters:
     values:
       - internal-dev
       - internal-dev-sandbox
+      - internal-qa
+      - internal-qa-sandbox
   - name: apigee_organization
   - name: aws_org_account
   - name: aws_env_account
