@@ -1,0 +1,34 @@
+- name: rebuild apigee app 
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: yes
+
+  vars:
+    APIGEE_ORGANIZATION: "{{ lookup('env', 'APIGEE_ORGANIZATION') }}"
+    APIGEE_ACCESS_TOKEN: "{{ lookup('env', 'APIGEE_ACCESS_TOKEN') }}"
+    APIGEE_DEVELOPER_EMAIL: "{{ lookup('env', 'APIGEE_DEVELOPER_EMAIL') }}"
+    APIGEE_APP_NAME: "{{ lookup('env', 'APIGEE_APP_NAME') }}"
+
+  pre_tasks:
+    - name: check APIGEE_ORGANIZATION
+      fail:
+        msg: "APIGEE_ORGANIZATION not set"
+      when: not APIGEE_ORGANIZATION
+
+    - name: check APIGEE_ACCESS_TOKEN
+      fail:
+        msg: "APIGEE_ACCESS_TOKEN not set"
+      when: not APIGEE_ACCESS_TOKEN
+
+    - name: check APIGEE_DEVELOPER_EMAIL
+      fail:
+        msg: "APIGEE_DEVELOPER_EMAIL not set"
+      when: not APIGEE_DEVELOPER_EMAIL
+
+    - name: check APIGEE_APP_NAME
+      fail:
+        msg: "APIGEE_APP_NAME not set"
+      when: not APIGEE_APP_NAME
+
+  roles:
+    - rebuild-apigee-app
