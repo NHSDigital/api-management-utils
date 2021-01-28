@@ -51,7 +51,7 @@ resource "aws_ecs_service" "service" {
   launch_type   = "FARGATE"
 
   deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 0
+  deployment_minimum_healthy_percent = 100
   force_new_deployment               = true
 
   network_configuration {
@@ -59,7 +59,7 @@ resource "aws_ecs_service" "service" {
     subnets         = data.terraform_remote_state.pre-reqs.outputs.subnet_ids
   }
 
-  health_check_grace_period_seconds = 45
+  health_check_grace_period_seconds = {{ health_check_grace_period_seconds }}
 
   load_balancer {
     target_group_arn = aws_alb_target_group.service.arn
