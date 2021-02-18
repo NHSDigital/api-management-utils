@@ -59,7 +59,7 @@ steps:
     displayName: "Install utils pre-requisites"
 
   - bash: |
-      tfenv use 0.13.6
+      tfenv use 0.14.6
     displayName: setup terraform
     condition: and(succeeded(), eq(variables['deploy_containers'], 'true'))
 
