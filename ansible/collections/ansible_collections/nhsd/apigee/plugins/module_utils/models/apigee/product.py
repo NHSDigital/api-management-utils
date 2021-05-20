@@ -78,3 +78,13 @@ class ApigeeProduct(pydantic.BaseModel):
                     + f"found {len(attrs)}"
                 )
         return attributes
+
+    @pydantic.root_validator
+    def validate_approval_type(cls, values):
+        environments, approval_type = values.get("environments"), values.get("approvalType")
+        if "prod" in environments and approval_type == "auto":
+            raise AssertionError(
+                "Product approval type must be set to 'manual'"
+                + f", found '{approval_type}'"
+            )
+        return values
