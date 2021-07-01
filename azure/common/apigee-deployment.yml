@@ -57,11 +57,11 @@ parameters:
   - name: enable_monitoring
     type: boolean
     displayName: Whether monitoring is needed
-    default: false
+    default: true
   - name: enable_status_monitoring
     type: boolean
+    default: true
     displayName: Temporary flag for adding a _status endpoint to service discovery
-    default: false
   - name: secret_file_ids
     displayName: List of additional AWS Secrets Manager multiline Secret IDs
     type: object
