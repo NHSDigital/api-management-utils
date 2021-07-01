@@ -39,8 +39,8 @@
       - "age_hours, {{ age_hours }}"
       - "should remove,  {{ should_remove }}"
 
-
-- block:
+- name: "remove api"
+  block:
     - name: get api revisions
       uri:
         url: "{{ apis_uri }}/{{ api_slug }}/revisions"

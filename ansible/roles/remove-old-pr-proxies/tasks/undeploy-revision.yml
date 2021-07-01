@@ -1,25 +1,40 @@
+- name: "Get deployments for {{ api_slug }} - {{ revision }} and undeploy"
+  block:
+  - name: "increment the retry count"
+    set_fact:
+      retry_count: "{{ 0 if retry_count is undefined else retry_count | int + 1 }}"
 
-- name: "get deployments {{ api_slug }} - {{ revision }}"
-  uri:
-    url: "{{ apis_uri }}/{{ api_slug }}/revisions/{{ revision }}/deployments"
-    headers:
-      Authorization: "Bearer {{ APIGEE_ACCESS_TOKEN }}"
-    return_content: yes
-  register: get_deployments
+  - name: "get deployments {{ api_slug }} - {{ revision }}"
+    uri:
+      url: "{{ apis_uri }}/{{ api_slug }}/revisions/{{ revision }}/deployments"
+      headers:
+        Authorization: "Bearer {{ APIGEE_ACCESS_TOKEN }}"
+      return_content: yes
+    register: get_deployments
 
-- name: "get environments"
-  set_fact:
-    deploy_envs: "{{ get_deployments.json.environment | map(attribute='name') | list }}"
+  - name: "get environments"
+    set_fact:
+      deploy_envs: "{{ get_deployments.json.environment | map(attribute='name') | list }}"
 
-- name: "undeploy {{ api_slug }} - {{ revision }}"
-  uri:
-    url: "{{ org_uri }}/environments/{{ env }}/apis/{{ api_slug }}/revisions/{{ revision }}/deployments"
-    method: DELETE
-    headers:
-      Authorization: "Bearer {{ APIGEE_ACCESS_TOKEN }}"
-    return_content: yes
-  loop: "{{ deploy_envs }}"
-  loop_control:
-    loop_var: "env"
-    label: "undeploy - {{ env }}:{{ api_slug }}:{{ revision }}"
-  changed_when: yes
+  - name: "undeploy {{ api_slug }} - {{ revision }}"
+    uri:
+      url: "{{ org_uri }}/environments/{{ env }}/apis/{{ api_slug }}/revisions/{{ revision }}/deployments"
+      method: DELETE
+      headers:
+        Authorization: "Bearer {{ APIGEE_ACCESS_TOKEN }}"
+      return_content: yes
+    loop: "{{ deploy_envs }}"
+    loop_control:
+      loop_var: "env"
+      label: "undeploy - {{ env }}:{{ api_slug }}:{{ revision }}"
+    changed_when: yes
+
+  rescue:
+    - fail:
+        msg: Maximum retries of grouped tasks reached
+      when: retry_count | int == 5
+
+    - debug:
+        msg: "undeploy failed. retrying..."
+
+    - include_tasks: undeploy-revision.yml
