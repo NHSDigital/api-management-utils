@@ -54,9 +54,6 @@ parameters:
   - name: hosted_target_healthcheck_suffix
     type: string
     default: ''
-  - name: manual_approval_env
-    type: string
-    default: ''
 
 
 stages:
