@@ -64,20 +64,20 @@ stages:
                   - template: ./get-aws-secrets-and-ssm-params.yml
                     parameters:
                       secret_ids:
-                        - ${{ parameters.aws_account }}/azure-devops/apigee-${{ parameters.apigee_org }}/APIGEE_OTP_KEY
-                        - ${{ parameters.aws_account }}/azure-devops/apigee-${{ parameters.apigee_org }}/APIGEE_PASSWORD
+                        - ${{ parameters.aws_account }}/azure-devops/apigee-${{ parameters.apigee_org }}/APIGEE_OTP_KEY_CURRENT_BACKUP
+                        - ${{ parameters.aws_account }}/azure-devops/apigee-${{ parameters.apigee_org }}/APIGEE_PASSWORD_CURRENT_BACKUP
                       config_ids:
-                        - /${{ parameters.aws_account }}/azure-devops/apigee-${{ parameters.apigee_org }}/APIGEE_USERNAME
+                        - /${{ parameters.aws_account }}/azure-devops/apigee-${{ parameters.apigee_org }}/APIGEE_USERNAME_CURRENT_BACKUP
                       aws_account: ${{ parameters.aws_account }}
 
                   - bash: |
-                      export MFA_CODE=`oathtool --totp -b "$(APIGEE_OTP_KEY)"`
+                      export MFA_CODE=`oathtool --totp -b "$(APIGEE_OTP_KEY_CURRENT_BACKUP)"`
                       # basic auth value here is an apigee public value .. https://docs.apigee.com/api-platform/system-administration/management-api-tokens  (not secret)
                       curl -X POST https://login.apigee.com/oauth/token \
                       -H "Content-Type: application/x-www-form-urlencoded" \
                       -H "Accept: application/json;charset=utf-8" \
                       -H "Authorization: Basic ZWRnZWNsaTplZGdlY2xpc2VjcmV0" \
-                      -d "username=$(APIGEE_USERNAME)&password=$(APIGEE_PASSWORD)&mfa_token=${MFA_CODE}&grant_type=password" | jq .access_token > .token
+                      -d "username=$(APIGEE_USERNAME_CURRENT_BACKUP)&password=$(APIGEE_PASSWORD_CURRENT_BACKUP)&mfa_token=${MFA_CODE}&grant_type=password" | jq .access_token > .token
                       # Set token into variable
                       echo "##vso[task.setvariable variable=secret.${{ upper(parameters.apigee_org) }}_API_ACCESS_TOKEN;issecret=true]`cat .token`"
                     displayName: Get access token

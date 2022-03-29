@@ -53,10 +53,10 @@ steps:
 
   - template: ../components/get-mfa-code.yml
     parameters:
-      apigee_otp_key: $(APIGEE_OTP_KEY)
+      apigee_otp_key: $(APIGEE_OTP_KEY_CURRENT_BACKUP)
 
   - template: ../components/get-access-token.yml
     parameters:
-      apigee_username: $(APIGEE_USERNAME)
-      apigee_password: $(APIGEE_PASSWORD)
+      apigee_username: $(APIGEE_USERNAME_CURRENT_BACKUP)
+      apigee_password: $(APIGEE_PASSWORD_CURRENT_BACKUP)
       apigee_organization: ${{ parameters.apigee_organization }}
