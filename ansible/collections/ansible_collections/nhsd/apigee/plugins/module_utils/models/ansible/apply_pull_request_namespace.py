@@ -55,7 +55,19 @@ class ApplyPullRequestNamespace(pydantic.BaseModel):
                     else proxy
                     for proxy in product.proxies
                 ]
-
+                
+                for attribute in product.attributes:
+                    if attribute.name != 'ratelimit':
+                        continue
+                    
+                    new_value = {}
+                    for key in attribute.value.keys():
+                        if key.startswith(api_name):
+                            new_value[key.replace(old, new)] = attribute.value[key]
+                        else:
+                            new_value[key] = attribute.value[key]
+                    
+                    attribute.value = new_value
             for spec in env.specs:
                 spec.name = spec.name.replace(old, new, 1)
             
