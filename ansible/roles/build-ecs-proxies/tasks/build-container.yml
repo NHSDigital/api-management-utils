@@ -10,22 +10,24 @@
   changed_when: no
 
 - name: pull latest if exists - to ensure cache  {{ item }}
-  docker_image:
-    name: "{{ ecr_registry }}/{{ item }}:{{ describe_images.stdout }}"
-    source: pull
+  ansible.builtin.command:
+    cmd: "docker pull {{ ecr_registry }}/{{ item }}:{{ describe_images.stdout }}"
   when: describe_images.stdout != 'None'
   ignore_errors: true
   no_log: true
 
-- name: build and push ecr image {{ item }}
-  docker_image:
-    name: "{{ image_name }}"
-    build:
-      path: "{{ base_dir }}/{{ images_map[item].path }}"
-      dockerfile: "{{ base_dir }}/{{ images_map[item].dockerfile }}"
-      pull: yes
-      network: host
-    source: build
-    force_source: yes
-    push: yes
-    timeout: 300
+- name: build ecr image {{ item }}
+  ansible.builtin.command:
+    cmd: >
+      docker build
+      -t {{ image_name }}
+      -f {{ base_dir }}/{{ images_map[item].dockerfile }}
+      {{ base_dir }}/{{ images_map[item].path }}
+      --network host --pull
+  register: build_result
+  ignore_errors: false
+
+- name: push ecr image {{ item }}
+  ansible.builtin.command:
+    cmd: "docker push {{ image_name }}"
+  when: build_result.rc == 0
