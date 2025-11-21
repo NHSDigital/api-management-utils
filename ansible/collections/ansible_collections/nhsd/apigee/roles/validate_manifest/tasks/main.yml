@@ -18,12 +18,6 @@
   set_fact:
     manifest: "{{ lookup('file', manifest_file ) | from_yaml }}"
 
-
-# - name: Load vars.yml for {{ DIST_DIR }}
-#   include_vars:
-#     file: "{{ DIST_DIR }}/vars.yml"
-#   when: DIST_DIR is not defined
-
 - name: validate manifest
   nhsd.apigee.validate_manifest:
     manifest: "{{ manifest }}"
