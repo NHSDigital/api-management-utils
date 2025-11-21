@@ -11,7 +11,7 @@
 
 - name: pull latest if exists - to ensure cache  {{ item }}
   ansible.builtin.command:
-    cmd: "docker pull {{ ecr_registry }}/{{ item }}:{{ describe_images.stdout }}"
+    cmd: "docker pull {{ ecr_registry }}/{{ service_id }}_{{ item }}:{{ describe_images.stdout }}"
   when: describe_images.stdout != 'None'
   ignore_errors: true
   no_log: true
