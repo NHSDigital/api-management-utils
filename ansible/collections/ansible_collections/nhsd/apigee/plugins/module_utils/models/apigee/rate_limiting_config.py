@@ -38,7 +38,7 @@ class QuotaConfig(ExcludeNoneModel):
 
 class SpikeArrestConfig(ExcludeNoneModel):
     enabled: bool = None
-    ratelimit: constr(pattern=r"^[1-9][0-9]*(ps|pm)$") = None
+    ratelimit: constr(regex=r"^[1-9][0-9]*(ps|pm)$") = None
 
 
 class RateLimitingConfig(ExcludeNoneModel):

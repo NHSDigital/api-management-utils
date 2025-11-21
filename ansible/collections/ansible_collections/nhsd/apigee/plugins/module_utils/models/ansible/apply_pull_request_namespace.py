@@ -27,7 +27,7 @@ class ApplyPullRequestNamespace(pydantic.BaseModel):
     :param manifest: The content of your manifest.yml.
     """
 
-    pull_request: pydantic.constr(pattern=r"^pr-[0-9]+$|^utils-pr-[0-9]+$")  # i.e. 'pr-1234' or 'utils-pr-1234'
+    pull_request: pydantic.constr(regex=r"^pr-[0-9]+$|^utils-pr-[0-9]+$")  # i.e. 'pr-1234' or 'utils-pr-1234'
     manifest: Manifest
 
     @pydantic.validator("manifest")

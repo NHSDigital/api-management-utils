@@ -81,7 +81,7 @@ class ApigeeProductAttributeAccess(BaseModel):
 
 class ApigeeProductAttributeRateLimit(BaseModel):
     name: Literal["ratelimit"]
-    value: constr(pattern=r"^[0-9]+(ps|pm)$")
+    value: constr(regex=r"^[0-9]+(ps|pm)$")
 
 
 def _literal_name(class_):
@@ -141,8 +141,8 @@ class ApigeeProduct(BaseModel):
         item_type=LITERAL_APIGEE_ENVIRONMENTS, min_items=1, max_items=1
     )
     proxies: List[str] = []
-    quota: constr(pattern=r"[1-9][0-9]*") = None
-    quotaInterval: constr(pattern=r"[1-9][0-9]*") = None
+    quota: constr(regex=r"[1-9][0-9]*") = None
+    quotaInterval: constr(regex=r"[1-9][0-9]*") = None
     quotaTimeUnit: Literal["minute", "hour"] = None
     scopes: List[str] = []
 
