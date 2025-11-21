@@ -14,10 +14,16 @@
   set_fact:
     DIST_DIRS: "{{ find_dist_dirs | json_query('files[*].path') | list }}"
 
+
 - name: validate test manifest files
-  include_role:
-    name: validate_manifest
-    vars_from: "{{ DIST_DIR }}/vars.yml"
+  block:
+    - name: Load vars.yml for {{ DIST_DIR }}
+      include_vars:
+        file: "{{ DIST_DIR }}/vars.yml"
+
+    - name: Run validate_manifest role
+      include_role:
+        name: validate_manifest
   loop: "{{ DIST_DIRS }}"
   loop_control:
     loop_var: DIST_DIR
