@@ -157,6 +157,11 @@ jobs:
           - ${{ cache_step }}
 
       - bash: |
+          ls -l /agent/_work/_tool/Python/3.13.7/x64/bin/
+          /agent/_work/_tool/Python/3.13.7/x64/bin/python --version
+        displayName: DEBUG Python path
+
+      - bash: |
           n=0
           until [ "$n" -ge 3 ]
           do
