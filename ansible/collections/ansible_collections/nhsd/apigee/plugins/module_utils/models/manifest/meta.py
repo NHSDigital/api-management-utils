@@ -11,7 +11,7 @@ _REGISTRY_DATA = {}
 
 
 class ManifestMetaApi(pydantic.BaseModel):
-    name: pydantic.constr(regex=r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
+    name: pydantic.constr(pattern=r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
     id: typing.Optional[pydantic.UUID4] = pydantic.Field(
         None, description="This field is deprecated, use guid instead."
     )
@@ -84,7 +84,7 @@ class ManifestMetaApi(pydantic.BaseModel):
 
 
 class ManifestMeta(pydantic.BaseModel):
-    schema_version: pydantic.constr(regex=r"[1-9][0-9]*(\.[0-9]+){0,2}")
+    schema_version: pydantic.constr(pattern=r"[1-9][0-9]*(\.[0-9]+){0,2}")
     api: ManifestMetaApi
 
     @pydantic.validator("schema_version")
