@@ -23,6 +23,14 @@ steps:
       versionSpec: '3.13'
 
   - bash: |
+      echo "Checking the python version in use to set LD_LIBRARY_PATH"
+      echo "Python version selected: $(PythonVersion)"
+      echo "Python location: $(pythonLocation)"
+      echo "##vso[task.setvariable variable=LD_LIBRARY_PATH]$(pythonLocation)/lib"
+    displayName: 'Set LD_LIBRARY_PATH'
+  
+
+  - bash: |
       tfenv use 0.14.6
     displayName: setup terraform
 
