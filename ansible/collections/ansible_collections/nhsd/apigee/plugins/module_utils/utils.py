@@ -5,7 +5,7 @@ import requests
 import typing
 
 from ansible_collections.nhsd.apigee.plugins.module_utils import constants
-from ansible.parsing.yaml.objects import AnsibleUnsafeText
+from ansible.utils.unsafe_proxy import AnsibleUnsafeText
 
 
 def exclude_keys(dict_, keys_to_ignore):
