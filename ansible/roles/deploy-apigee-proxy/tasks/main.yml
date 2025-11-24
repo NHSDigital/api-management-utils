@@ -57,14 +57,14 @@
     url: "{{ api_uri }}/_ping"
     return_content: yes
   register: proxy_ping_response
-  when: PING | bool
+  when: PING
 
 - name: set proxy_deployed_revision
   set_fact:
     proxy_deployed_revision: "{{ (proxy_ping_response.content | from_json).revision }}"
-  when: PING | bool
+  when: PING
 
 - name: check correct revision was deployed
   fail:
     msg: "Incorrect revision {{ proxy_deployed_revision }}, was expecting {{ revision }}"
-  when: PING | bool and proxy_deployed_revision != revision
+  when: PING and proxy_deployed_revision != revision

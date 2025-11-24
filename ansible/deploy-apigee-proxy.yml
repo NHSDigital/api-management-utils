@@ -10,7 +10,7 @@
     APIGEE_ORGANIZATION: "{{ lookup('env', 'APIGEE_ORGANIZATION') }}"
     APIGEE_ACCESS_TOKEN: "{{ lookup('env', 'APIGEE_ACCESS_TOKEN') }}"
     PROXY_DIR: "{{ lookup('env', 'PROXY_DIR') }}"
-    PING: "{{ (lookup('env', 'PING') | length > 0) | ternary(lookup('env', 'PING'), 'true') }}"
+    PING: "{{ (lookup('env', 'PING') | default('true')) | bool }}"
 
   pre_tasks:
     - name: check FULLY_QUALIFIED_SERVICE_NAME
