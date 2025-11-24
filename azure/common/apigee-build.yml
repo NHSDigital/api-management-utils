@@ -157,6 +157,7 @@ jobs:
         displayName: 'Query and set python tool cache path'      
 
       - task: UsePythonVersion@0
+        name: UsePy
         displayName: "Use Python ${{ parameters.python_version }}"
         inputs:
           versionSpec: ${{ parameters.python_version }}

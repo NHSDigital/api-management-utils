@@ -44,6 +44,7 @@ jobs:
 
 
       - task: UsePythonVersion@0
+        name: UsePy
         displayName: 'Use Python 3.13'
         inputs:
           versionSpec: 3.13
