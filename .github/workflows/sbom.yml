@@ -13,12 +13,12 @@ on:
 
 env:
   SYFT_VERSION: "1.27.1"
-  TF_VERSION: "1.12.2" 
+  TF_VERSION: "1.12.2"
 
 jobs:
   deploy:
     name: Software Bill of Materials
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     permissions:
       actions: read
       contents: write
