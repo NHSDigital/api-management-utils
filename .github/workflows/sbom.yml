@@ -112,3 +112,4 @@ jobs:
       - name: Debug Go version
         run: |
           go version
+          go list std
