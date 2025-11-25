@@ -18,11 +18,7 @@ env:
 jobs:
   deploy:
     name: Software Bill of Materials
-    runs-on: ubuntu-22.04
-
-    container:
-      image: python:3.13-slim
-
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: write
@@ -112,8 +108,3 @@ jobs:
         with:
           name: sbom-packages
           path: sbom-packages-${{ github.event.repository.name }}.csv
-
-      - name: Debug Go version
-        run: |
-          go version
-          go list std
