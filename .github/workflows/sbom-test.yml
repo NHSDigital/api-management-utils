@@ -1,11 +1,11 @@
 
-name: SBOM Vulnerability Scanning - Testing
+name: SBOM Testing
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Run SBOM check"
+        description: "SBOM check"
         required: true
         type: choice
         options:
