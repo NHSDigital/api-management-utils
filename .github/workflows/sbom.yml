@@ -140,7 +140,7 @@ jobs:
       # Generate SBOM in JSON
       - name: Generate SBOM (CycloneDX)
         run: |
-          cyclonedx-py --format json --output sbom.json
+          cyclonedx-py poetry --format json --output sbom.json
 
       # Convert SBOM JSON to CSV
       - name: Convert SBOM JSON to CSV
