@@ -19,6 +19,10 @@ jobs:
   deploy:
     name: Software Bill of Materials
     runs-on: ubuntu-22.04
+
+    container:
+      image: python:3.13-slim
+
     permissions:
       actions: read
       contents: write

@@ -28,6 +28,7 @@ lxml = "^5.0"
 boto3 = "^1.34.0"
 ansible-core = "^2.19.4"
 urllib3 = "^2.5.0"
+cryptography = "44.0.1"
 
 [poetry.group.dev.dependencies]
 ansible-lint = "^6.0"
