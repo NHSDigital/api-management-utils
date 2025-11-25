@@ -18,7 +18,7 @@ env:
 jobs:
   deploy:
     name: Software Bill of Materials
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     permissions:
       actions: read
       contents: write
