@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "SBOM check"
+        description: "Run SBOM check"
         required: true
         type: choice
         options:
@@ -21,51 +21,3 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install Poetry and Tools
-        run: |
-          apt-get update && apt-get install -y curl
-          curl -sSL https://install.python-poetry.org | python3 -
-          export PATH="$HOME/.local/bin:$PATH"
-          pip install cyclonedx-bom grype tabulate
-
-      - name: Install dependencies
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          poetry install
-
-      # Generate SBOM in JSON
-      - name: Generate SBOM (CycloneDX)
-        run: |
-          cyclonedx-py --format json --output sbom.json
-
-      # Convert SBOM JSON to CSV
-      - name: Convert SBOM JSON to CSV
-        run: |
-          python .github/scripts/sbom_json_to_csv.py sbom.json sbom.csv
-
-      - name: Upload SBOM artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom-files
-          path: |
-            sbom.json
-            sbom.csv
-
-      # Scan SBOM for vulnerabilities
-      - name: Scan SBOM for Vulnerabilities
-        run: |
-          grype sbom:sbom.json -o json > grype-report.json
-
-      # Convert Grype JSON to CSV
-      - name: Convert Grype JSON to CSV
-        run: |
-          python .github/scripts/grype_json_to_csv.py grype-report.json grype-report.csv
-
-      - name: Upload Vulnerability Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: grype-report
-          path: |
-            grype-report.json
-            grype-report.csv
