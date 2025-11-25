@@ -124,7 +124,13 @@ jobs:
           apt-get update && apt-get install -y curl
           curl -sSL https://install.python-poetry.org | python3 -
           export PATH="$HOME/.local/bin:$PATH"
-          pip install cyclonedx-bom grype tabulate
+          pip install cyclonedx-bom tabulate
+
+      
+      - name: Install Grype
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
 
       - name: Install dependencies
         run: |
