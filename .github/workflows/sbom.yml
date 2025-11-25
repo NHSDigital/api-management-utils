@@ -108,3 +108,7 @@ jobs:
         with:
           name: sbom-packages
           path: sbom-packages-${{ github.event.repository.name }}.csv
+
+      - name: Dubug Go version
+        uses: actions/checkout@v4
+        run: go version
