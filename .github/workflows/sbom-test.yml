@@ -1,5 +1,5 @@
 
-name: SBOM Vulnerability Scanning
+name: SBOM Vulnerability Scanning - Testing
 
 on:
   workflow_dispatch:
