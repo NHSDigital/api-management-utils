@@ -110,4 +110,5 @@ jobs:
           path: sbom-packages-${{ github.event.repository.name }}.csv
 
       - name: Debug Go version
-        run: go version
+        run: |
+          go version
