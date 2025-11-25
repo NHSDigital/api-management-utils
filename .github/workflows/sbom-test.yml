@@ -68,3 +68,4 @@ jobs:
           name: grype-report
           path: |
             grype-report.json
+            grype-report.csv
