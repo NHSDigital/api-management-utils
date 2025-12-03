@@ -56,8 +56,8 @@
   # manifest manages proxies too.
   when: item.name | regex_search('^' + SERVICE_NAME + '-' + PULL_REQUEST | default(APIGEE_ENVIRONMENT))
 
-- name: copy spec to s3
-  script: ../scripts/copy_spec_to_s3.py
+- name: copy spec to s3 
+  command: python3 copy_spec.py
 
 # - name: deploy apigee specs
 #   nhsd.apigee.deploy_spec:
