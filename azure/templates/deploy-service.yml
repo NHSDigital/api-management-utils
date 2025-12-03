@@ -251,7 +251,7 @@ steps:
     displayName: 'Deploy Manifest'
   
   - bash: |
-      python3 scripts/copy_Spec.py
+      python3 ../../scripts/copy_spec.py
     displayName: 'Copy Spec'
 
   - ${{ if parameters.proxy_path }}:
