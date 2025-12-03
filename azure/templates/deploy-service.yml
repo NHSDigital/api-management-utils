@@ -249,6 +249,10 @@ steps:
       export PULL_REQUEST="${{ parameters.pr_label }}"
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-manifest
     displayName: 'Deploy Manifest'
+  
+  - bash: |
+      python3 scripts/copy_Spec.py
+    displayName: 'Copy Spec'
 
   - ${{ if parameters.proxy_path }}:
     - bash: |
