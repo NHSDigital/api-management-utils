@@ -36,8 +36,8 @@ jobs:
 
       - bash: |
           PATCH=$(curl -s https://api.github.com/repos/actions/python-versions/releases \
-            | jq -r '[.[] | .tag_name | select(startswith("3.13"))] | sort | last' \
-            | cut -d- -f1)
+              | jq -r '[.[] | .tag_name | select(startswith("3.13"))] | .[]' \
+              | sort -V | tail -n 1 | cut -d- -f1)
           echo "Resolved latest python version: $PATCH"
           echo "##vso[task.setvariable variable=LD_LIBRARY_PATH;]/agent/_work/_tool/Python/${PATCH}/x64/lib/"
         displayName: 'Query and set python tool cache path'
