@@ -57,7 +57,8 @@
   when: item.name | regex_search('^' + SERVICE_NAME + '-' + PULL_REQUEST | default(APIGEE_ENVIRONMENT))
 
 - name: list repo files
-  command: ls -R $(Build.SourcesDirectory)
+  workingDirectory: $(Build.SourcesDirectory)
+  command: ls -R
 
 - name: copy spec to s3
   command: python3 $(Build.SourcesDirectory)/scripts/copy_spec_to_s3.py
