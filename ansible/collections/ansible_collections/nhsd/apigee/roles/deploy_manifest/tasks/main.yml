@@ -57,7 +57,7 @@
   when: item.name | regex_search('^' + SERVICE_NAME + '-' + PULL_REQUEST | default(APIGEE_ENVIRONMENT))
 
 - name: copy spec to s3
-  command: python3 {{ playbook_dir }}/scripts/copy_spec_to_s3.py
+  command: python3 {{ playbook_dir }}/../scripts/copy_spec_to_s3.py
 
 # - name: deploy apigee specs
 #   nhsd.apigee.deploy_spec:
