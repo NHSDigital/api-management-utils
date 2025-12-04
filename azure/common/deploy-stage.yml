@@ -271,7 +271,10 @@ stages:
                     pr_label: $(PR_LABEL)
                     aws_account: ${{ parameters.aws_account }}
                 
-                - bash: python copy_spec.py
+                - bash: |
+                    pwd
+                    ls
+                    python copy_spec.py
                   displayName: Copy Spec
                   workingDirectory: scripts/
 
