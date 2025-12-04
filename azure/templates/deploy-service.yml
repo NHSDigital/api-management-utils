@@ -250,9 +250,14 @@ steps:
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-manifest
     displayName: 'Deploy Manifest'
   
-  - bash: python copy_spec.py
+  - bash: |
+      pwd
+      ls
+      cd ..
+      cd ..
+      cd scripts/ 
+      python copy_spec.py
     displayName: Copy Spec
-    workingDirectory: scripts/
 
   - ${{ if parameters.proxy_path }}:
     - bash: |
