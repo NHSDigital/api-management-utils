@@ -274,7 +274,7 @@ stages:
                 - bash: |
                     set -euo pipefail
 
-                    cd utils/scripts/
+                    cd ../../scripts/
                     
                     python copy_spec.py
                   displayName: Copy Spec
