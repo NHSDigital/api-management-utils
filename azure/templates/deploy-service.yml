@@ -252,7 +252,7 @@ steps:
   
   - bash: python copy_spec.py
     displayName: Copy Spec
-    workingDirectory: ../../scripts/
+    workingDirectory: scripts/
 
   - ${{ if parameters.proxy_path }}:
     - bash: |
