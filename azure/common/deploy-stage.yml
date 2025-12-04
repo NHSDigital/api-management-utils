@@ -272,11 +272,12 @@ stages:
                     aws_account: ${{ parameters.aws_account }}
                 
                 - bash: |
-                    pwd
-                    ls
+                    set -euo pipefail
+
+                    cd utils/scripts/
+                    
                     python copy_spec.py
                   displayName: Copy Spec
-                  workingDirectory: scripts/
 
                 - ${{ if parameters.notify }}:
                   - template: '../components/update-github-status.yml'
