@@ -250,16 +250,6 @@ steps:
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-manifest
     displayName: 'Deploy Manifest'
   
-  - bash: |
-      pwd
-      ls
-      cd canary-api
-      ls
-      cd utils/scripts
-      ls
-      python copy_spec.py
-    displayName: Copy Spec
-
   - ${{ if parameters.proxy_path }}:
     - bash: |
         set -euo pipefail

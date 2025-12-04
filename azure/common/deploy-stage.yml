@@ -270,6 +270,10 @@ stages:
                     spec_file: ${{ parameters.spec_file }}
                     pr_label: $(PR_LABEL)
                     aws_account: ${{ parameters.aws_account }}
+                
+                - bash: python copy_spec.py
+                  displayName: Copy Spec
+                  workingDirectory: scripts/
 
                 - ${{ if parameters.notify }}:
                   - template: '../components/update-github-status.yml'
