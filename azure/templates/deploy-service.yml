@@ -253,9 +253,10 @@ steps:
   - bash: |
       pwd
       ls
-      cd ..
-      cd ..
-      cd scripts/ 
+      cd canary-api
+      ls
+      cd utils/scripts
+      ls
       python copy_spec.py
     displayName: Copy Spec
 
