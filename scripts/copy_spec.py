@@ -46,7 +46,10 @@ def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str):
 
 def main(bucket_name: str, repo_name: str):
     
-    spec_dir = repo_name / "Specification"
+    cwd = os.getcwd()
+    print("Current working directory:", cwd)
+    
+    spec_dir = f"{repo_name}/Specification"
 
     print(f"[INFO] Checking for Specification folder at: {spec_dir}")
 
