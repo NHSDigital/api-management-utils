@@ -44,11 +44,11 @@ def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str):
         sys.exit(1)
 
 
-def main(bucket_name: str):
-    repo_path = Path.cmd()
-    spec_dir = repo_path / "Specification"
+def main(bucket_name: str, repo_name: str):
+    
+    spec_dir = repo_name / "Specification"
 
-    repo_name = repo_path.name
+    print(f"[INFO] Checking for Specification folder at: {spec_dir}")
 
     if not spec_dir.exists():
         print("[SKIP] No Specification folder found — skipping all processing.")
@@ -81,10 +81,11 @@ def main(bucket_name: str):
 
 if __name__ == "__main__":
     print("Hitting main")
-    #if len(sys.argv) != 2:
-    #    print("Usage: python copy_spec_to_s3.py <s3_bucket_name>")
-    #    sys.exit(1)
+    if len(sys.argv) != 3:
+        print("Usage: python copy_spec_to_s3.py <s3_bucket_name> <repo_name>")
+        sys.exit(1)
 
-    #bucket_name = sys.argv[1]
+    bucket_name = sys.argv[1]
+    repo_name = sys.argv[2]
 
-    #sys.exit(main(bucket_name))
+    sys.exit(main(bucket_name))
