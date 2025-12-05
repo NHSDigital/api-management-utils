@@ -90,4 +90,4 @@ if __name__ == "__main__":
     print(f"Repo name: {repo_name}")
     print(f"Bucket name: {bucket_name}")
 
-    sys.exit(main(bucket_name))
+    sys.exit(main(bucket_name,repo_name))
