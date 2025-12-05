@@ -273,7 +273,7 @@ stages:
                 
                 - bash: |
                     echo working directory: $(System.DefaultWorkingDirectory)
-                    cd ../utils/scripts/
+                    cd */*/utils/scripts
 
                     python copy_spec.py
                   displayName: Copy Spec
