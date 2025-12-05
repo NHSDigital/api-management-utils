@@ -61,9 +61,15 @@ def main(bucket_name: str, repo_name: str, working_directory:str):
     #    print("[SKIP] No Specification folder found — skipping all processing.")
     #    return 0
 
-    json_file = list(Path(working_directory).glob("*.json"))
-    if json_file:
-        upload_to_s3(json_file, bucket_name, repo_name)
+    #json_file = list(Path(working_directory).glob("*.json"))
+
+    #print(json_file)
+
+    #if json_file:
+    
+    json_file = f"{repo_name}.json"
+    print(f"[INFO] Found JSON file: {json_file}")
+    upload_to_s3(json_file, bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
     return 0
