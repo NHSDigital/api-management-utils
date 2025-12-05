@@ -24,16 +24,16 @@ def main(bucket_name: str, repo_name: str, working_directory:str):
     cwd = os.getcwd()
     print("Current working directory:", cwd)
 
-    os.chdir(working_directory)
-    cmdNew = os.getcwd()
-    print("New working directory:", cmdNew)
-    
+    # Go up one level to reach utils/
+    utils_dir = os.path.dirname(os.cmd())
+    print("Utils directory:", utils_dir)
+
     json_file = f"{repo_name}.json"
-    print(f"[INFO] Found JSON file: {json_file}")
 
-    
+    # Build path to JSON file
+    json_path = os.path.join(utils_dir, json_file)
 
-    upload_to_s3(json_file, bucket_name, repo_name)
+    upload_to_s3(json_path, bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
     return 0
