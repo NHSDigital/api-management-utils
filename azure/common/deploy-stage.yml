@@ -272,8 +272,9 @@ stages:
                     aws_account: ${{ parameters.aws_account }}
                 
                 - bash: |
-                    cd */utils/scripts/
-                    
+                    echo working directory: $(System.DefaultWorkingDirectory)
+                    cd ../utils/scripts/
+
                     python copy_spec.py
                   displayName: Copy Spec
 
