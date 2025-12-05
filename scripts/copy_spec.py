@@ -44,7 +44,7 @@ def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str):
         sys.exit(1)
 
 
-def main(bucket_name: str, repo_name: str):
+def main(bucket_name: str, repo_name: str, working_directory:str):
     
     cwd = os.getcwd()
     print("Current working directory:", cwd)
@@ -71,6 +71,7 @@ def main(bucket_name: str, repo_name: str):
 
 if __name__ == "__main__":
     print("Hitting main")
+
     if len(sys.argv) != 4:
         print("Usage: python copy_spec_to_s3.py <s3_bucket_name> <repo_name> <Working Directory>")
         sys.exit(1)
@@ -82,4 +83,4 @@ if __name__ == "__main__":
     print(f"Bucket name: {bucket_name}")
     print(f"Working Directory: {working_directory}")
 
-    sys.exit(main(bucket_name,repo_name))
+    sys.exit(main(bucket_name,repo_name,working_directory))

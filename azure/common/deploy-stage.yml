@@ -278,7 +278,7 @@ stages:
                     pip install json
                     pip install boto3
                     
-                    python copy_spec.py "nhsd-apm-management-ptl-proxygen" "${{ parameters.service_name }} $(System.DefaultWorkingDirectory)"
+                    python copy_spec.py "nhsd-apm-management-ptl-proxygen" "${{ parameters.service_name }}" "$(System.DefaultWorkingDirectory)"
                   displayName: Copy Spec
 
                 - ${{ if parameters.notify }}:
