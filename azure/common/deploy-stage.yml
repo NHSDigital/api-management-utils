@@ -272,9 +272,7 @@ stages:
                     aws_account: ${{ parameters.aws_account }}
                 
                 - bash: |
-                    set -euo pipefail
-
-                    cd ../../scripts/
+                    cd */utils/scripts/
                     
                     python copy_spec.py
                   displayName: Copy Spec
