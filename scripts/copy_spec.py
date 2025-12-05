@@ -87,5 +87,7 @@ if __name__ == "__main__":
 
     bucket_name = sys.argv[1]
     repo_name = sys.argv[2]
+    print(f"Repo name: {repo_name}")
+    print(f"Bucket name: {bucket_name}")
 
     sys.exit(main(bucket_name))
