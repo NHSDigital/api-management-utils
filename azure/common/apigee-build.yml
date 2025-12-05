@@ -254,12 +254,6 @@ jobs:
         displayName: "Copy utils into artifact"
 
       - bash: |
-          pwd
-          ls
-        workingDirectory: "${{ parameters.service_name }}"
-        displayName: "View files in current directory"
-
-      - bash: |
           set -euo pipefail
           export DIST_DIR=`pwd`/dist
           export ANSIBLE_FORCE_COLOR=yes

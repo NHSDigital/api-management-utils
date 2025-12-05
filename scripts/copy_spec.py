@@ -48,34 +48,21 @@ def main(bucket_name: str, repo_name: str):
     
     cwd = os.getcwd()
     print("Current working directory:", cwd)
+
+    os.chdir(working_directory)
+    cmdNew = os.getcwd()
+    print("New working directory:", cmdNew)
     
-    spec_dir = f"{repo_name}/Specification"
+    #spec_dir = f"{repo_name}/Specification"
 
-    print(f"[INFO] Checking for Specification folder at: {spec_dir}")
+    #print(f"[INFO] Checking for Specification folder at: {spec_dir}")
 
-    if not spec_dir.exists():
-        print("[SKIP] No Specification folder found — skipping all processing.")
-        return 0
+    #if not spec_dir.exists():
+    #    print("[SKIP] No Specification folder found — skipping all processing.")
+    #    return 0
 
-    yaml_files = list(spec_dir.glob("*.yaml")) + list(spec_dir.glob("*.yml"))
-
-    if not yaml_files:
-        print("[SKIP] Specification folder exists, but no YAML files found — skipping.")
-        return 0
-
-    output_dir = Path("spec_output")
-    output_dir.mkdir(exist_ok=True)
-
-    generated_files = []
-
-    print(f"[INFO] Found {len(yaml_files)} YAML file(s). Converting...")
-
-    for yaml_file in yaml_files:
-        json_file = convert_yaml_to_json(yaml_file, output_dir)
-        generated_files.append(json_file)
-
-    print(f"[INFO] Uploading {len(generated_files)} file(s) to S3 bucket '{bucket_name}'...")
-    for json_file in generated_files:
+    json_file = list(Path(working_directory).glob("*.json"))
+    if json_file:
         upload_to_s3(json_file, bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
@@ -85,12 +72,14 @@ def main(bucket_name: str, repo_name: str):
 if __name__ == "__main__":
     print("Hitting main")
     if len(sys.argv) != 3:
-        print("Usage: python copy_spec_to_s3.py <s3_bucket_name> <repo_name>")
+        print("Usage: python copy_spec_to_s3.py <s3_bucket_name> <repo_name> <Working Directory>")
         sys.exit(1)
 
     bucket_name = sys.argv[1]
     repo_name = sys.argv[2]
+    working_directory = sys.argv[3]
     print(f"Repo name: {repo_name}")
     print(f"Bucket name: {bucket_name}")
+    print(f"Working Directory: {working_directory}")
 
     sys.exit(main(bucket_name,repo_name))
