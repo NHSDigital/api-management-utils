@@ -274,7 +274,10 @@ stages:
                 - bash: |
                     echo working directory: $(System.DefaultWorkingDirectory)
                     cd */*/utils/scripts
-
+                    pip install pyyaml
+                    pip install json
+                    pip install boto3
+                    
                     python copy_spec.py
                   displayName: Copy Spec
 
