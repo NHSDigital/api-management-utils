@@ -25,7 +25,7 @@ def main(bucket_name: str, repo_name: str, working_directory:str):
     print("Current working directory:", cwd)
 
     # Go up one level to reach utils/
-    utils_dir = os.path.dirname(os.cmd())
+    utils_dir = os.path.dirname(os.getcwd())
     print("Utils directory:", utils_dir)
 
     json_file = f"{repo_name}.json"
