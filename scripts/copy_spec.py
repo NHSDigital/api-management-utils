@@ -71,7 +71,7 @@ def main(bucket_name: str, repo_name: str):
 
 if __name__ == "__main__":
     print("Hitting main")
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("Usage: python copy_spec_to_s3.py <s3_bucket_name> <repo_name> <Working Directory>")
         sys.exit(1)
 
