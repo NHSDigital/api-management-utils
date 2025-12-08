@@ -272,15 +272,7 @@ stages:
                     aws_account: ${{ parameters.aws_account }}
 
                 - bash: |
-                    echo working directory: $(System.DefaultWorkingDirectory)
-                    echo changed directory : $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(resources.pipeline.build_pipeline.pipelineID)
 
-                    echo project: $(resources.pipeline.build_pipeline.projectID)
-                    echo pipeline: $(resources.pipeline.build_pipeline.pipelineID)
-                    echo runBranch: $(Build.SourceBranch)
-
-                    echo "!!! Using ls -t will set the latest file for the artifact. If you get an error here, it is because '${{ parameters.service_name }}' is not the source alias name of the artifact"
-                    ls -R $(Pipeline.Workspace)
                     export SERVICE_ARTIFACT_NAME=`ls -t $(Pipeline.Workspace)/s/${{ parameters.service_name }}`
                     echo "##vso[task.setvariable variable=SERVICE_ARTIFACT_NAME]$SERVICE_ARTIFACT_NAME"
                     echo "Set Artifact Name of: $SERVICE_ARTIFACT_NAME"
@@ -292,6 +284,7 @@ stages:
                     
                     python copy_spec.py "nhsd-apm-management-ptl-proxygen" "${{ parameters.service_name }}" "$(System.DefaultWorkingDirectory)"
                   displayName: Copy Spec
+                  workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}//$(SERVICE_ARTIFACT_NAME)
 
                 - ${{ if parameters.notify }}:
                   - template: '../components/update-github-status.yml'
