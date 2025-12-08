@@ -247,10 +247,11 @@ stages:
                     set -euo pipefail
 
                     echo Working:  $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)
+                    echo s3bucket: nhsd-apm-management-${{ parameters.aws_account }}-proxygen
 
                     pip install boto3
                     
-                    python copy_spec.py "nhsd-apm-management-ptl-proxygen" "${{ parameters.service_name }}" "$(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)"
+                    python copy_spec.py "nhsd-apm-management-${{ parameters.aws_account }}-proxygen" "${{ parameters.service_name }}" "$(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)"
                   displayName: Copy Spec
                   workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)/utils/scripts
 
