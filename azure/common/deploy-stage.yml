@@ -273,13 +273,15 @@ stages:
 
                 - bash: |
                     echo working directory: $(System.DefaultWorkingDirectory)
-                    cd */*/utils/scripts
+                    echo changed directory : $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(resources.pipeline.build_pipeline.pipelineID)
+                    cd /utils/scripts
                     pip install pyyaml
                     pip install json
                     pip install boto3
                     
                     python copy_spec.py "nhsd-apm-management-ptl-proxygen" "${{ parameters.service_name }}" "$(System.DefaultWorkingDirectory)"
                   displayName: Copy Spec
+                  workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(resources.pipeline.build_pipeline.pipelineID)
 
                 - ${{ if parameters.notify }}:
                   - template: '../components/update-github-status.yml'
