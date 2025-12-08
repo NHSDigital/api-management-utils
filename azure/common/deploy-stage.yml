@@ -273,18 +273,15 @@ stages:
 
                 - bash: |
 
-                    export SERVICE_ARTIFACT_NAME=`ls -t $(Pipeline.Workspace)/s/${{ parameters.service_name }}`
-                    echo "##vso[task.setvariable variable=SERVICE_ARTIFACT_NAME]$SERVICE_ARTIFACT_NAME"
-                    echo "Set Artifact Name of: $SERVICE_ARTIFACT_NAME"
+                    set -euo pipefail
 
-                    cd /utils/scripts
                     pip install pyyaml
                     pip install json
                     pip install boto3
                     
                     python copy_spec.py "nhsd-apm-management-ptl-proxygen" "${{ parameters.service_name }}" "$(System.DefaultWorkingDirectory)"
                   displayName: Copy Spec
-                  workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}//$(SERVICE_ARTIFACT_NAME)
+                  workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}//$(SERVICE_ARTIFACT_NAME)/utils/scripts
 
                 - ${{ if parameters.notify }}:
                   - template: '../components/update-github-status.yml'
