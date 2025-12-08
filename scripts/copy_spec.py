@@ -26,15 +26,20 @@ def main(bucket_name: str, repo_name: str, working_directory:str):
 
     # Go up one level to reach utils/
     #json_dir = os.path.dirname(os.path.dirname(os.getcwd()))
-    json_dir = os.chdir(working_directory)
-    print("Utils directory:", json_dir)
+    #json_dir = os.chdir(working_directory)
+    #print("Utils directory:", json_dir)
 
-    json_file = f"{repo_name}.json"
+    root_dir = Path.cwd().parents[1]     # go up 2 levels
+    json_file = root_dir / f"{repo_name}.json"
+
+    print(json_file)
+
+    #json_file = f"{repo_name}.json"
 
     # Build path to JSON file
-    json_path = os.path.join(json_dir, json_file)
+    #json_path = os.path.join(json_dir, json_file)
 
-    upload_to_s3(json_path, bucket_name, repo_name)
+    upload_to_s3(json_file, bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
     return 0
