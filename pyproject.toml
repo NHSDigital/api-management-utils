@@ -29,6 +29,7 @@ boto3 = "^1.34.0"
 ansible-core = "^2.19.4"
 urllib3 = "^2.5.0"
 cryptography = "44.0.1"
+click="^8.1.2"
 
 [poetry.group.dev.dependencies]
 ansible-lint = "^6.0"
