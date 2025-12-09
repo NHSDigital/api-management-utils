@@ -123,11 +123,26 @@ stages:
                     role: "auto-ops"
                     profile: "apm_${{ parameters.aws_account }}"
                     aws_account: "${{ parameters.aws_account }}"
+                
+                - bash: |
+                    PATCH=$(curl -s https://api.github.com/repos/actions/python-versions/releases \
+                      | jq -r '[.[] | .tag_name | select(startswith("3.13"))] | .[]' \
+                      | sort -V | tail -n 1 | cut -d- -f1)
+                    echo "Resolved latest python version: $PATCH"
+                    echo "##vso[task.setvariable variable=LD_LIBRARY_PATH;]/agent/_work/_tool/Python/${PATCH}/x64/lib/"
+                  displayName: 'Query and set python tool cache path' 
 
                 - task: UsePythonVersion@0
-                  displayName: "Use Python ${{ parameters.python_version }}"
+                  name: UsePy
+                  displayName: "Use Python 3.13"
                   inputs:
-                    versionSpec: ${{ parameters.python_version }}
+                    versionSpec: 3.13
+
+                - bash: |
+                    echo "Checking the python version in use to set LD_LIBRARY_PATH"
+                    echo "Python location: $(UsePy.pythonLocation)"
+                    echo "##vso[task.setvariable variable=LD_LIBRARY_PATH]$(UsePy.pythonLocation)/lib"
+                  displayName: 'Set LD_LIBRARY_PATH'
 
                 - template: "../components/set-facts.yml"
                   parameters:

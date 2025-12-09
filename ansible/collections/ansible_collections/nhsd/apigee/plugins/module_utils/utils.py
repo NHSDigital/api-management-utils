@@ -5,6 +5,7 @@ import requests
 import typing
 
 from ansible_collections.nhsd.apigee.plugins.module_utils import constants
+from ansible.utils.unsafe_proxy import AnsibleUnsafeText
 
 
 def exclude_keys(dict_, keys_to_ignore):
@@ -19,7 +20,7 @@ def delta(before, after, keys_to_ignore=None):
             before,
             after,
             ignore_order=True,
-            ignore_type_in_groups=[(ansible.utils.unsafe_proxy.AnsibleUnsafeText,str)],
+            ignore_type_in_groups=[(AnsibleUnsafeText,str)],
             exclude_paths=[f"root['{key}']" for key in keys_to_ignore],
         ).to_json()
     )

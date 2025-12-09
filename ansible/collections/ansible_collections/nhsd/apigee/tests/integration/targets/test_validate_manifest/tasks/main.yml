@@ -17,7 +17,6 @@
 - name: validate test manifest files
   include_role:
     name: validate_manifest
-    vars_from: "{{ DIST_DIR }}/vars.yml"
   loop: "{{ DIST_DIRS }}"
   loop_control:
     loop_var: DIST_DIR

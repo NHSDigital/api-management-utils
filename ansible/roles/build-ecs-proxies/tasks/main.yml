@@ -35,5 +35,5 @@
   changed_when: no
 
 - name: build and push ecr images
-  include: build-container.yml
+  include_tasks: build-container.yml
   with_items: "{{ containers }}"
