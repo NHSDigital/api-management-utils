@@ -34,7 +34,7 @@
     terraform_lock_timeout_mins: 0
 
 - name: maybe remove deployment
-  include: remove-ecs-deployment.yml
+  include_tasks: remove-ecs-deployment.yml
   with_list: "{{ ns_service_tuples }}"
   loop_control:
     loop_var: ns_service_tuple

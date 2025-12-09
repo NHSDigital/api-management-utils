@@ -54,7 +54,7 @@
   # since products can only be created if they reference proxies
   # that exist.  This safety check can be removed when the
   # manifest manages proxies too.
-  when: item.name | regex_search('^' + SERVICE_NAME + '-' + PULL_REQUEST | default(APIGEE_ENVIRONMENT))
+  when: (item.name is match('^' ~ SERVICE_NAME ~ '-' ~ (PULL_REQUEST | default(APIGEE_ENVIRONMENT))))
 
 # - name: deploy apigee specs
 #   nhsd.apigee.deploy_spec:
