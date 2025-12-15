@@ -50,7 +50,7 @@ jobs:
         displayName: print aws info
 
       - bash: |
-          tfenv use 0.14.6
+          tfenv use 1.2.3
         displayName: setup terraform
       
       - task: s3-cache-action@1
