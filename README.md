@@ -2,13 +2,13 @@
 Scripts and utilities used across API managment platform and services 
 
 
-################################################################################
-###########               Python upgrade to 3.13                     ###########
-###########       Utils Repo has been updated to python 3.13         ###########
-################################################################################
+##########################
+##Python upgrade to 3.13
+Utils Repo has been updated to python 3.13
+##########################
 
-########### We are continuing to support python 3.8/9(which are currently out of support) until January 26th 2026 ###########
-###########          After the deadline your pipelines will fail if you are using python version 3.8/9            ###########
+We are continuing to support python 3.8/9(which are currently out of support) until January 26th 2026
+After the deadline your pipelines will fail if you are using python version 3.8/9
 
 Python upgrade related changes
 ###############################
