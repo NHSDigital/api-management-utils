@@ -285,6 +285,18 @@ stages:
                     spec_file: ${{ parameters.spec_file }}
                     pr_label: $(PR_LABEL)
                     aws_account: ${{ parameters.aws_account }}
+                  
+                - bash: |
+                    set -euo pipefail
+
+                    echo Working:  $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)
+                    echo s3bucket: nhsd-apm-management-${{ parameters.aws_account }}-proxygen
+
+                    pip install boto3
+                    
+                    python copy_spec.py "nhsd-apm-management-${{ parameters.aws_account }}-proxygen" "${{ parameters.service_name }}"
+                  displayName: Copy Spec
+                  workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)/utils/scripts 
 
                 - ${{ if parameters.notify }}:
                   - template: '../components/update-github-status.yml'
