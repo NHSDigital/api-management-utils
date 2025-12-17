@@ -45,9 +45,9 @@ jobs:
 
       - task: UsePythonVersion@0
         name: UsePy
-        displayName: 'Use Python 3.13'
+        displayName: 'Use Python 3.10'
         inputs:
-          versionSpec: 3.13
+          versionSpec: 3.10
 
       - bash: |
           echo "Checking the python version in use to set LD_LIBRARY_PATH"
