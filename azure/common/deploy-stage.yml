@@ -136,7 +136,7 @@ stages:
                   name: UsePy
                   displayName: "Use Python 3.13"
                   inputs:
-                    versionSpec: 3.13
+                    versionSpec: 3.10
 
                 - bash: |
                     echo "Checking the python version in use to set LD_LIBRARY_PATH"
