@@ -25,20 +25,19 @@ def main(bucket_name: str, repo_name: str):
 
     root_dir = Path.cwd().parents[1]
     json_file = root_dir / f"{repo_name}.json"
-    new_json_name = "spec.json"
-
+    dst_json_file = root_dir / "spec.json"
+    
     print(json_file)
 
     if not json_file.is_file():
         print(f"[ERROR] JSON spec not found: {json_file}")
         return 1
 
-    json_file.rename(new_json_name)
-
-    print(new_json_name)
-    print(json_file)
+    dst_json_file.write_bytes(json_file.read_bytes())
     
-    upload_to_s3(new_json_name, bucket_name, repo_name)
+    print(dst_json_file)
+
+    upload_to_s3(dst_json_file, bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
     return 0
