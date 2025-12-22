@@ -276,21 +276,6 @@ jobs:
         displayName: "Copy utils into artifact"
 
       - bash: |
-          set -euo pipefail
-          export DIST_DIR=`pwd`/dist
-          export ANSIBLE_FORCE_COLOR=yes
-          if [ -f manifest.yml ]; then
-             rsync -a manifest.yml dist
-             make -C utils/ansible validate-manifest
-          elif [ -f manifest_template.yml ]; then
-             rsync -a manifest_template.yml dist
-             make -C utils/ansible template-manifest
-             make -C utils/ansible validate-manifest
-          fi
-        workingDirectory: "${{ parameters.service_name }}"
-        displayName: "Validate manifest (template) and copy to artifact"
-
-      - bash: |
           cd ${{ parameters.service_name }}/utils
           git rev-parse HEAD > ../dist/.utils-version
         displayName: Snapshot utils version
