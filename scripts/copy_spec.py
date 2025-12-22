@@ -25,7 +25,7 @@ def main(bucket_name: str, repo_name: str):
 
     root_dir = Path.cwd().parents[1]
     json_file = root_dir / f"{repo_name}.json"
-    minified_json = "spec.json"
+    new_json_name = "spec.json"
 
     print(json_file)
 
@@ -33,13 +33,11 @@ def main(bucket_name: str, repo_name: str):
         print(f"[ERROR] JSON spec not found: {json_file}")
         return 1
 
-    with open(json_file, "r") as f:
-        data = json.load(f)
+    json_file.rename(new_json_name)
 
-    with open(minified_json, "w") as f:
-        json.dump(data, f)
-
-    upload_to_s3(minified_json, bucket_name, repo_name)
+    print(json_file)
+    
+    upload_to_s3(json_file, bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
     return 0
