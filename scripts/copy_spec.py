@@ -25,7 +25,7 @@ def main(bucket_name: str, repo_name: str):
 
     root_dir = Path.cwd().parents[1]
     json_file = root_dir / f"{repo_name}.json"
-    dst_json_file = root_dir / "spec.json"
+    dst_json_file = root_dir / "utils/scripts/spec.json"
     
     print(json_file)
 
