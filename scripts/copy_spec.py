@@ -37,7 +37,7 @@ def main(bucket_name: str, repo_name: str):
     
     print(dst_json_file)
 
-    upload_to_s3(dst_json_file, bucket_name, repo_name)
+    upload_to_s3("spec.json", bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
     return 0
