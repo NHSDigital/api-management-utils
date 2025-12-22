@@ -35,9 +35,10 @@ def main(bucket_name: str, repo_name: str):
 
     json_file.rename(new_json_name)
 
+    print(new_json_name)
     print(json_file)
     
-    upload_to_s3(json_file, bucket_name, repo_name)
+    upload_to_s3(new_json_name, bucket_name, repo_name)
 
     print("[DONE] Processing complete.")
     return 0
