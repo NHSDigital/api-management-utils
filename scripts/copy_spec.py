@@ -37,7 +37,7 @@ def main(bucket_name: str, repo_name: str):
         data = json.load(f)
 
     with open(minified_json, "w") as f:
-        json.dump(data, f, separators=(",", ":"))
+        json.dump(data, f)
 
     upload_to_s3(minified_json, bucket_name, repo_name)
 
