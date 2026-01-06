@@ -31,3 +31,11 @@
   ansible.builtin.command:
     cmd: "docker push {{ image_name }}"
   when: build_result.rc == 0
+
+- name: Apply lifecycle policy to ecr {{ service_id }}_{{ item }}
+  ansible.builtin.command:
+    cmd: >
+      {{ aws_cmd }} ecr put-lifecycle-policy
+      --repository-name {{ service_id }}_{{ item }}
+      --lifecycle-policy-text file://{{ base_dir }}/ecr/ecr_lifecycle.json
+  when: lifecycle_check.rc != 0 and build_result.rc == 0
