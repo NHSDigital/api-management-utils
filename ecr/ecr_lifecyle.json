@@ -2,11 +2,12 @@
   "rules": [
     {
       "rulePriority": 1,
-      "description": "Expire untagged images beyond the latest 3",
+      "description": "Keep the latest 2 ECS release builds",
       "selection": {
-        "tagStatus": "untagged",
+        "tagStatus": "tagged",
+        "tagPrefixList": ["ecs-"],
         "countType": "imageCountMoreThan",
-        "countNumber": 10
+        "countNumber": 2
       },
       "action": {
         "type": "expire"
@@ -14,15 +15,27 @@
     },
     {
       "rulePriority": 2,
-      "description": "Retain ECS-protected images",
+      "description": "Keep the latest 2 PR builds",
       "selection": {
         "tagStatus": "tagged",
-        "tagPrefixList": ["ecs-"],
+        "tagPrefixList": [""],
         "countType": "imageCountMoreThan",
-        "countNumber": 9999
+        "countNumber": 2
       },
       "action": {
-        "type": "retain"
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 3,
+      "description": "Delete ALL untagged images",
+      "selection": {
+        "tagStatus": "untagged",
+        "countType": "imageCountMoreThan",
+        "countNumber": 0
+      },
+      "action": {
+        "type": "expire"
       }
     }
   ]

@@ -82,6 +82,41 @@
       register: tfapply
       when: not do_not_terraform
 
+    - name: "{{ item.env }} | Login and pull image"
+      vars:
+        REG: "{{ item.account }}.dkr.ecr.eu-west-2.amazonaws.com"
+        IMG: "{{ service_id }}_{{ ecs_service[0].name }}"
+        TAG: "{{ build_label }}"
+      shell: |
+        aws ecr get-login-password --region eu-west-2 \
+          | docker login --username AWS --password-stdin {{ REG }}
+
+        docker pull {{ REG }}/{{ IMG }}:{{ TAG }}
+      args:
+        executable: /bin/bash
+      loop:
+        - { env: "PTL",  account: "{{ PTL_ACCOUNT_ID }}" }
+        - { env: "PROD", account: "{{ PROD_ACCOUNT_ID }}" }
+      loop_control:
+        label: "{{ item.env }}"
+    
+    - name: "{{ item.env }} | Retag and push image"
+      vars:
+        REG: "{{ item.account }}.dkr.ecr.eu-west-2.amazonaws.com"
+        IMG: "{{ service_id }}_{{ ecs_service[0].name }}"
+        TAG: "{{ build_label }}"
+        NEW: "ecs-{{ build_label }}"
+      shell: |
+        docker tag  {{ REG }}/{{ IMG }}:{{ TAG }} {{ REG }}/{{ IMG }}:{{ NEW }}
+        docker push {{ REG }}/{{ IMG }}:{{ NEW }}
+      args:
+        executable: /bin/bash
+      loop:
+        - { env: "PTL",  account: "{{ PTL_ACCOUNT_ID }}" }
+        - { env: "PROD", account: "{{ PROD_ACCOUNT_ID }}" }
+      loop_control:
+        label: "{{ item.env }}"
+
   rescue:
     - name: output plan
       debug:
