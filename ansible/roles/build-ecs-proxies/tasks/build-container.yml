@@ -45,5 +45,11 @@
     cmd: >
       {{ aws_cmd }} ecr put-lifecycle-policy
       --repository-name {{ service_id }}_{{ item }}
-      --lifecycle-policy-text file://{{ base_dir }}/files/ecr_lifecycle.json
+      --lifecycle-policy-text file://{{ role_path }}/files/ecr_lifecycle.json
   when: lifecycle_check.rc != 0 and build_result.rc == 0
+
+- debug:
+    msg: "ROLE PATH = {{ role_path }}"
+- debug:
+    msg: "BASE DIR = {{ base_dir }}"
+
