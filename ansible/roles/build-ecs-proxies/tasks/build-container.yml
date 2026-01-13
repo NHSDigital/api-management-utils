@@ -45,5 +45,5 @@
     cmd: >
       {{ aws_cmd }} ecr put-lifecycle-policy
       --repository-name {{ service_id }}_{{ item }}
-      --lifecycle-policy-text file://{{ base_dir }}/ecr/ecr_lifecycle.json
+      --lifecycle-policy-text file://{{ base_dir }}/files/ecr_lifecycle.json
   when: lifecycle_check.rc != 0 and build_result.rc == 0
