@@ -40,6 +40,21 @@
   failed_when: false
   changed_when: false
 
+- debug: 
+    msg:
+      - "ROLE PATH = {{ role_path }}" 
+      - "BASE DIR = {{ base_dir }}" 
+      - "PWD = {{ lookup('env','PWD') }}"
+
+- name: List contents of the role directory
+  ansible.builtin.command: "ls -R {{ role_path }}"
+  register: ls_role
+  changed_when: false
+  failed_when: false
+
+- debug:
+    var: ls_role.stdout_lines
+
 - name: Apply lifecycle policy to ecr {{ service_id }}_{{ item }}
   ansible.builtin.command:
     cmd: >
@@ -47,9 +62,3 @@
       --repository-name {{ service_id }}_{{ item }}
       --lifecycle-policy-text file://{{ role_path }}/files/ecr_lifecycle.json
   when: lifecycle_check.rc != 0 and build_result.rc == 0
-
-- debug:
-    msg: "ROLE PATH = {{ role_path }}"
-- debug:
-    msg: "BASE DIR = {{ base_dir }}"
-
