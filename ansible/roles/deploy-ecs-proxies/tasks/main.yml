@@ -83,7 +83,7 @@
       when: not do_not_terraform
 
     - name: Retag and promote ECS image (release pipelines only)
-      when: pr_number is not defined or pr_number == ""
+      #when: pr_number is not defined or pr_number == ""
       vars:
         PTL_REG: "{{ PTL_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com"
         PROD_REG: "{{ PROD_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com"
