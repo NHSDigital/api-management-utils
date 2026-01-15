@@ -67,7 +67,7 @@
 
 - name: Read lifecycle policy from the shared file
   ansible.builtin.slurp:
-    src: "{{ playbook_dir }}/../../ecr-lifecycle/ecr_lifecycle.json"
+    src: "{{ playbook_dir }}/../ecr-lifecycle/ecr_lifecycle.json"
   register: desired_policy_raw
 
 - name: Decode lifecycle policy file
@@ -78,7 +78,7 @@
   ansible.builtin.command: >
     {{ aws_cmd }} ecr put-lifecycle-policy
     --repository-name {{ service_id }}_{{ item }}
-    --lifecycle-policy-text file://{{ playbook_dir }}/../../ecr-lifecycle/ecr_lifecycle.json
+    --lifecycle-policy-text file://{{ playbook_dir }}/../ecr-lifecycle/ecr_lifecycle.json
   when:
     - existing_policy_json != desired_policy_json
     - env != "prod" or prod_lifecycle_update_allowed
