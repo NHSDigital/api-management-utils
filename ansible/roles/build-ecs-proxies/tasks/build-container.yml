@@ -77,7 +77,7 @@
   ansible.builtin.command: >
     {{ aws_cmd }} ecr put-lifecycle-policy
     --repository-name {{ service_id }}_{{ item }}
-    --lifecycle-policy-text file://{{ playbook_dir }}/ecr-lifecycle/ecr_lifecycle.json
+    --lifecycle-policy-text '{{ desired_policy_json | to_json }}'
   when:
     - existing_policy_json != desired_policy_json
 
