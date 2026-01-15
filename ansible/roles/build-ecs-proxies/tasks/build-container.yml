@@ -32,28 +32,35 @@
     cmd: "docker push {{ image_name }}"
   when: build_result.rc == 0
 
-# - name: Get existing lifecycle policy JSON for {{ service_id }}_{{ item }}
-#   ansible.builtin.command: >
-#     {{ aws_cmd }} ecr get-lifecycle-policy
-#     --repository-name {{ service_id }}_{{ item }}
-#     --query 'lifecyclePolicyText'
-#     --output text
-#   register: existing_policy
-#   failed_when: false
-#   changed_when: false
+- name: Get existing lifecycle policy JSON for {{ service_id }}_{{ item }}
+  ansible.builtin.command: >
+    {{ aws_cmd }} ecr get-lifecycle-policy
+    --repository-name {{ service_id }}_{{ item }}
+    --query 'lifecyclePolicyText'
+    --output text
+  register: existing_policy_raw
+  failed_when: false
+  changed_when: false
 
-# - name: Read lifecycle policy from the local file
-#   ansible.builtin.slurp:
-#     src: "{{ role_path }}/files/ecr_lifecycle.json"
-#   register: desired_policy_raw
+- name: Parse existing lifecycle policy JSON
+  set_fact:
+    existing_policy_json: "{{ existing_policy_raw.stdout | default('{}') | from_json }}"
+  when: existing_policy_raw.stdout != ""
 
-# - name: Decode lifecycle policy file
-#   set_fact:
-#     desired_policy: "{{ desired_policy_raw.content | b64decode }}"
+- name: Read lifecycle policy from the local file
+  ansible.builtin.slurp:
+    src: "{{ role_path }}/files/ecr_lifecycle.json"
+  register: desired_policy_raw
 
-# - name: Apply lifecycle policy to ecr {{ service_id }}_{{ item }} if different
-#   ansible.builtin.command: >
-#     {{ aws_cmd }} ecr put-lifecycle-policy
-#     --repository-name {{ service_id }}_{{ item }}
-#     --lifecycle-policy-text file://{{ role_path }}/files/ecr_lifecycle.json
-#   when: existing_policy.stdout != desired_policy and build_result.rc == 0
+- name: Decode lifecycle policy file
+  set_fact:
+    desired_policy_json: "{{ desired_policy_raw.content | b64decode | from_json }}"
+
+- name: Apply lifecycle policy to ecr {{ service_id }}_{{ item }} if different
+  ansible.builtin.command: >
+    {{ aws_cmd }} ecr put-lifecycle-policy
+    --repository-name {{ service_id }}_{{ item }}
+    --lifecycle-policy-text file://{{ playbook_dir }}/../../common/a-management-utils-3/ecr-lifecycle/ecr_lifecycle.json
+  when:
+    - existing_policy_json != desired_policy_json
+    - env != "prod" or prod_lifecycle_update_allowed
