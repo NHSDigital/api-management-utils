@@ -81,4 +81,3 @@
     --lifecycle-policy-text file://{{ playbook_dir }}/../ecr-lifecycle/ecr_lifecycle.json
   when:
     - existing_policy_json != desired_policy_json
-    - env != "prod" or prod_lifecycle_update_allowed
