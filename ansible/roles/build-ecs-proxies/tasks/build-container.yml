@@ -32,28 +32,28 @@
     cmd: "docker push {{ image_name }}"
   when: build_result.rc == 0
 
-- name: Get existing lifecycle policy JSON for {{ service_id }}_{{ item }}
-  ansible.builtin.command: >
-    {{ aws_cmd }} ecr get-lifecycle-policy
-    --repository-name {{ service_id }}_{{ item }}
-    --query 'lifecyclePolicyText'
-    --output text
-  register: existing_policy
-  failed_when: false
-  changed_when: false
+# - name: Get existing lifecycle policy JSON for {{ service_id }}_{{ item }}
+#   ansible.builtin.command: >
+#     {{ aws_cmd }} ecr get-lifecycle-policy
+#     --repository-name {{ service_id }}_{{ item }}
+#     --query 'lifecyclePolicyText'
+#     --output text
+#   register: existing_policy
+#   failed_when: false
+#   changed_when: false
 
-- name: Read lifecycle policy from the local file
-  ansible.builtin.slurp:
-    src: "{{ role_path }}/files/ecr_lifecycle.json"
-  register: desired_policy_raw
+# - name: Read lifecycle policy from the local file
+#   ansible.builtin.slurp:
+#     src: "{{ role_path }}/files/ecr_lifecycle.json"
+#   register: desired_policy_raw
 
-- name: Decode lifecycle policy file
-  set_fact:
-    desired_policy: "{{ desired_policy_raw.content | b64decode }}"
+# - name: Decode lifecycle policy file
+#   set_fact:
+#     desired_policy: "{{ desired_policy_raw.content | b64decode }}"
 
-- name: Apply lifecycle policy to ecr {{ service_id }}_{{ item }} if different
-  ansible.builtin.command: >
-    {{ aws_cmd }} ecr put-lifecycle-policy
-    --repository-name {{ service_id }}_{{ item }}
-    --lifecycle-policy-text file://{{ role_path }}/files/ecr_lifecycle.json
-  when: existing_policy.stdout != desired_policy and build_result.rc == 0
+# - name: Apply lifecycle policy to ecr {{ service_id }}_{{ item }} if different
+#   ansible.builtin.command: >
+#     {{ aws_cmd }} ecr put-lifecycle-policy
+#     --repository-name {{ service_id }}_{{ item }}
+#     --lifecycle-policy-text file://{{ role_path }}/files/ecr_lifecycle.json
+#   when: existing_policy.stdout != desired_policy and build_result.rc == 0

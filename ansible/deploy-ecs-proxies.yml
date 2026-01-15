@@ -46,3 +46,6 @@
   roles:
     - setup-facts
     - deploy-ecs-proxies
+
+    # - role: ecr-lifecycle-policy 
+    #   when: RELEASE_RELEASEID is defined and RELEASE_RELEASEID != ""

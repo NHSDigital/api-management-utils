@@ -21,3 +21,4 @@
   roles:
     - setup-facts
     - build-ecs-proxies
+    - ecr-lifecycle-policy
