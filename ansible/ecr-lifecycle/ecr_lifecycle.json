@@ -18,7 +18,7 @@
       "description": "Keep the 5 most recent build images - AMEND NUMBER AFTER TEST",
       "selection": {
         "tagStatus": "tagged",
-        "tagPrefixList": [""],
+        "tagPrefixList": ["*"],
         "countType": "imageCountMoreThan",
         "countNumber": 800
       },
