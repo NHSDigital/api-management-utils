@@ -82,6 +82,30 @@
       register: tfapply
       when: not do_not_terraform
 
+    - name: Retag and promote ECS image (release pipelines only)
+      when: pr_number is not defined or pr_number == ""
+      vars:
+        PTL_REG: "{{ PTL_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com"
+        PROD_REG: "{{ PROD_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com"
+        IMG: "{{ service_id }}_{{ ecs_service[0].name }}"
+        TAG: "{{ build_label }}"
+        NEW: "ecs-{{ build_label }}"
+      shell: |
+        aws ecr get-login-password --region eu-west-2 \
+          | docker login --username AWS --password-stdin {{ PTL_REG }}
+
+        docker pull {{ PTL_REG }}/{{ IMG }}:{{ TAG }}
+        docker tag {{ PTL_REG }}/{{ IMG }}:{{ TAG }} {{ PTL_REG }}/{{ IMG }}:{{ NEW }}
+        docker push {{ PTL_REG }}/{{ IMG }}:{{ NEW }}
+
+        aws ecr get-login-password --region eu-west-2 \
+          | docker login --username AWS --password-stdin {{ PROD_REG }}
+
+        docker tag {{ PTL_REG }}/{{ IMG }}:{{ NEW }} {{ PROD_REG }}/{{ IMG }}:{{ NEW }}
+        docker push {{ PROD_REG }}/{{ IMG }}:{{ NEW }}
+      args:
+        executable: /bin/bash
+
   rescue:
     - name: output plan
       debug:
