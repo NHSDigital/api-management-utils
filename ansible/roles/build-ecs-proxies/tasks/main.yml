@@ -30,6 +30,45 @@
   with_items: "{{ new_repos }}"
   when: new_repos
 
+# TEST REPO (override this for testing) - DELETE
+
+- set_fact:
+    test_repo: "canary_canary-api"
+
+- name: Read lifecycle policy file
+  ansible.builtin.slurp:
+    src: "{{ playbook_dir }}/ecr-lifecycle/ecr_lifecycle.json"
+  register: desired_policy_raw
+  # when: new_repos   # Uncomment
+
+- name: Debug raw slurp output
+  debug:
+    var: desired_policy_raw
+
+- name: Decode lifecycle policy JSON
+  set_fact:
+    desired_policy_json: "{{ desired_policy_raw.content | b64decode | from_json }}"
+  # when: new_repos   # Uncomment
+
+- name: Debug decoded lifecycle policy JSON
+  debug:
+    var: desired_policy_json
+
+- name: Apply lifecycle policy to ECR repo
+  ansible.builtin.command: >
+    {{ aws_cmd }} ecr put-lifecycle-policy
+    --repository-name {{ test_repo }}
+    --lifecycle-policy-text '{{ desired_policy_json | to_json }}'
+  register: lifecycle_update
+  # ignore_errors: yes
+  # with_items: "{{ new_repos }}"   # Uncomment
+  # when:
+  #   - new_repos # Uncomment
+
+- name: Debug lifecycle update result
+  debug:
+    var: lifecycle_update
+
 - name: ecr login
   shell: "eval $({{ aws_cmd }} ecr get-login --no-include-email)"
   changed_when: no
