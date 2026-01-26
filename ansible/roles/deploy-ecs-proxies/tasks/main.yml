@@ -82,44 +82,6 @@
       register: tfapply
       when: not do_not_terraform
 
-    - name: Retag ECS image using ECR API (release pipelines only)
-      when: lookup('env', 'RELEASE_RELEASEID') | length > 0
-      vars:
-        # Choose PTL for lower envs, PROD for prod
-        TARGET_ACCOUNT: >-
-          {{
-            (apigee_environment == "prod")
-            | ternary(PROD_ACCOUNT_ID, PTL_ACCOUNT_ID)
-          }}
-        REPO: "{{ service_id }}_{{ ecs_service[0].name }}"
-        OLD: "{{ build_label }}"
-        NEW: "ecs-{{ build_label }}"
-      shell: |
-        # 1. Fetch manifest from the SAME account (PTL for lower envs, PROD for prod)
-        MANIFEST=$(aws ecr batch-get-image \
-          --region eu-west-2 \
-          --registry-id {{ TARGET_ACCOUNT }} \
-          --repository-name {{ REPO }} \
-          --image-ids imageTag={{ OLD }} \
-          --query 'images[0].imageManifest' \
-          --output text)
-
-        # Safety check: ensure the base tag exists
-        if [ -z "$MANIFEST" ]; then
-          echo "ERROR: Tag {{ OLD }} does not exist in account {{ TARGET_ACCOUNT }}"
-          exit 1
-        fi
-
-        # 2. Write the new tag into the SAME account
-        aws ecr put-image \
-          --region eu-west-2 \
-          --registry-id {{ TARGET_ACCOUNT }} \
-          --repository-name {{ REPO }} \
-          --image-tag {{ NEW }} \
-          --image-manifest "$MANIFEST"
-      args:
-        executable: /bin/bash
-
   rescue:
     - name: output plan
       debug:

@@ -1,0 +1,24 @@
+- name: Pull existing image {{ item }}:{{ build_label }}
+  ansible.builtin.command:
+    cmd: >
+      docker pull {{ ecr_registry }}/{{ item }}:{{ build_label }}
+  with_items: "{{ repo_names }}"
+  register: pull_results
+
+- name: Retag image {{ item.item }}:{{ build_label }} → ecs-{{ build_label }}
+  ansible.builtin.command:
+    cmd: >
+      docker tag
+      {{ ecr_registry }}/{{ item.item }}:{{ build_label }}
+      {{ ecr_registry }}/{{ item.item }}:ecs-{{ build_label }}
+  with_items: "{{ pull_results.results }}"
+  when: item.rc == 0
+
+- name: Push new tag ecs-{{ build_label }} for {{ item.item }}
+  ansible.builtin.command:
+    cmd: >
+      docker push {{ ecr_registry }}/{{ item.item }}:ecs-{{ build_label }}
+  with_items: "{{ pull_results.results }}"
+  when: item.rc == 0
+
+
