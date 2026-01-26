@@ -16,7 +16,6 @@ https://nhsd-confluence.digital.nhs.uk/spaces/APM/pages/1226682275/Pipeline+Quer
 Note: Projects running Python version 3.13 or later do not need any pipeline modifications.
 
 
-
 ## Scripts
 * `template.py` - cli for basic jinja templating
 * `test_pull_request_deployments.py` - cli for testing utils against other repositories
