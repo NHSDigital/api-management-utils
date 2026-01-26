@@ -1,0 +1,13 @@
+- name: deploy ecs proxies retag
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: no
+
+  pre_tasks:
+    - name: include container vars
+      include_vars:
+        file: "{{ lookup('env', 'CONTAINER_VARS_FILE') | expandvars | expanduser | realpath }}"
+
+  roles:
+    - setup-facts
+    - deploy-ecs-proxies-retag

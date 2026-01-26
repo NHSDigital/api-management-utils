@@ -46,10 +46,16 @@
     {{ aws_cmd }} ecr put-lifecycle-policy
     --repository-name {{ item }}
     --lifecycle-policy-text '{{ desired_policy_json | to_json }}'
-  with_items: "{{ new_repos }}"
+
+  # ORIGINAL (commented out for testing)
+  # with_items: "{{ new_repos }}"
+
+  # TEST: apply to a specific existing repo
+  with_items:
+    - canary_canary-api
+
   register: lifecycle_update
   ignore_errors: yes
-  # when: new_repos UNCOMMENT
 
 - name: ecr login
   shell: "eval $({{ aws_cmd }} ecr get-login --no-include-email)"

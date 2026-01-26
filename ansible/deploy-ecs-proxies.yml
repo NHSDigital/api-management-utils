@@ -45,5 +45,4 @@
 
   roles:
     - setup-facts
-    - deploy-ecs-proxies-retag
     - deploy-ecs-proxies

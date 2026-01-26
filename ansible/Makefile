@@ -45,6 +45,9 @@ create-build-env-vars: guard-build_label guard-out_dir
 deploy-ecs-proxies: guard-account guard-build_label guard-service_id guard-APIGEE_ENVIRONMENT guard-PROXY_VARS_FILE
 	@poetry run ansible-playbook -i local deploy-ecs-proxies.yml
 
+deploy-ecs-proxies-retag: guard-build_label guard-service_id guard-CONTAINER_VARS_FILE
+    @poetry run ansible-playbook -i local deploy-ecs-proxies-retag.yml
+
 deploy-apigee-proxy: guard-FULLY_QUALIFIED_SERVICE_NAME guard-SERVICE_BASE_PATH guard-APIGEE_ENVIRONMENT guard-APIGEE_ORGANIZATION guard-APIGEE_ACCESS_TOKEN guard-PROXY_DIR guard-PING
 	@poetry run ansible-playbook -i local deploy-apigee-proxy.yml
 
