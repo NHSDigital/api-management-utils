@@ -6,7 +6,7 @@
   pre_tasks:
     - name: include container vars
       include_vars:
-        file: "{{ lookup('env', 'CONTAINER_VARS_FILE') | expandvars | expanduser | realpath }}"
+        file: "{{ lookup('env', 'PROXY_VARS_FILE') | expandvars | expanduser | realpath }}"
 
   roles:
     - setup-facts
