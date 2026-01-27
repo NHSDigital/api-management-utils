@@ -191,12 +191,6 @@ steps:
     displayName: Create ECS Prerequisites
     condition: and(succeeded(), eq(variables['deploy_containers'], 'true'))
 
-  - template: ../components/aws-assume-role.yml
-    parameters:
-      role: "$(DEPLOY_ROLE)"
-      profile: "$(DEPLOY_ROLE)"
-      aws_account: "${{ parameters.aws_account }}"
-
   - bash: |
       set -e
 
@@ -209,6 +203,12 @@ steps:
 
     displayName: Retag ECS image
     condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''))
+
+  - template: ../components/aws-assume-role.yml
+    parameters:
+      role: "$(DEPLOY_ROLE)"
+      profile: "$(DEPLOY_ROLE)"
+      aws_account: "${{ parameters.aws_account }}"
   
   - bash: |
       set -e
