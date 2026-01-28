@@ -1,3 +1,8 @@
+- name: Debug pulling image
+  debug:
+    msg: "Pulling {{ ecr_registry }}/{{ item }}:{{ build_label }}"
+  with_items: "{{ repo_names }}" 
+
 - name: Pull existing image {{ item }}:{{ build_label }}
   ansible.builtin.command:
     cmd: >
@@ -5,12 +10,24 @@
   with_items: "{{ repo_names }}"
   register: pull_results
 
+- name: Debug retagging image
+  debug:
+    msg: "Retagging {{ item.item }}:{{ build_label }} → ecs-{{ build_label }}"
+  with_items: "{{ pull_results.results }}"
+  when: item.rc == 0
+
 - name: Retag image {{ item.item }}:{{ build_label }} → ecs-{{ build_label }}
   ansible.builtin.command:
     cmd: >
       docker tag
       {{ ecr_registry }}/{{ item.item }}:{{ build_label }}
       {{ ecr_registry }}/{{ item.item }}:ecs-{{ build_label }}
+  with_items: "{{ pull_results.results }}"
+  when: item.rc == 0
+
+- name: Debug pushing image
+  debug:
+    msg: "Pushing ecs-{{ build_label }} for {{ item.item }}"
   with_items: "{{ pull_results.results }}"
   when: item.rc == 0
 

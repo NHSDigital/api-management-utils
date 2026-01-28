@@ -34,26 +34,19 @@
   ansible.builtin.slurp:
     src: "{{ playbook_dir }}/ecr-lifecycle/ecr_lifecycle.json"
   register: desired_policy_raw
-  # when: new_repos UNCOMMENT
+  when: new_repos
 
 - name: Decode lifecycle policy JSON
   set_fact:
     desired_policy_json: "{{ desired_policy_raw.content | b64decode | from_json }}"
-  # when: new_repos UNCOMMENT
+  when: new_repos
 
 - name: Apply lifecycle policy to each new repo
   ansible.builtin.command: >
     {{ aws_cmd }} ecr put-lifecycle-policy
     --repository-name {{ item }}
     --lifecycle-policy-text '{{ desired_policy_json | to_json }}'
-
-  # ORIGINAL (commented out for testing)
-  # with_items: "{{ new_repos }}"
-
-  # TEST: apply to a specific existing repo
-  with_items:
-    - canary_canary-api
-
+  with_items: "{{ new_repos }}"
   register: lifecycle_update
   ignore_errors: yes
 

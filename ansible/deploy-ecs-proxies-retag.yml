@@ -3,6 +3,11 @@
   connection: local
   gather_facts: no
 
+
+  vars:
+    service_id: "{{ lookup('env','service_id') }}"
+    aws_profile: "build-{{ service_id | lower }}"
+
   pre_tasks:
     - name: include container vars
       include_vars:
