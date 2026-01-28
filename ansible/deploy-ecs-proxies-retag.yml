@@ -1,0 +1,30 @@
+- name: deploy ecs proxies retag
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: no
+
+  vars:
+    service_id: "{{ lookup('env','service_id') }}"
+    APIGEE_ENVIRONMENT: "{{ lookup('env','APIGEE_ENVIRONMENT') }}"
+    account:  "{{ lookup('env','account') }}"
+
+  pre_tasks:
+    - name: Show CONTAINER_VARS_FILE from environment
+      debug:
+        msg: "CONTAINER_VARS_FILE={{ lookup('env','CONTAINER_VARS_FILE') }}"
+
+    - name: include container vars
+      include_vars:
+        file: "{{ lookup('env', 'CONTAINER_VARS_FILE') | expandvars | expanduser | realpath }}"
+    
+    - name: Debug docker_containers
+      debug:
+        var: docker_containers
+
+    - name: Debug containers
+      debug:
+        var: containers
+
+  roles:
+    - setup-facts
+    - deploy-ecs-proxies-retag
