@@ -1,3 +1,20 @@
+- name: Ensure docker_containers is loaded
+  include_vars:
+    file: "{{ lookup('env', 'PROXY_VARS_FILE') }}"
+  when: docker_containers is not defined
+
+- name: Debug docker_containers (retag role)
+  debug:
+    var: docker_containers
+
+- name: Debug containers (retag role)
+  debug:
+    var: containers
+
+- name: Debug repo_names (retag role)
+  debug:
+    var: repo_names
+
 - name: Debug pulling image
   debug:
     msg: "Pulling {{ ecr_registry }}/{{ item }}:{{ build_label }}"
