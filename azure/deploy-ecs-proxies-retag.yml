@@ -16,7 +16,7 @@ steps:
       set -e
       source "${{ parameters.env_vars_dir }}/.build_env_vars"
 
-      export CONTAINER_VARS_FILE="$(realpath ${{ parameters.container_vars }})"
+      export CONTAINER_VARS_FILE="$BUILD_SOURCESDIRECTORY/${{ parameters.container_vars }}"
 
       make --no-print-directory -C ${{ parameters.utils_dir }}/ansible deploy-ecs-proxies-retag
     displayName: "Retag ECS proxies"

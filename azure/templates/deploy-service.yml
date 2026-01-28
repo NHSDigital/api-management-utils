@@ -194,7 +194,9 @@ steps:
   - bash: |
       set -e
 
+      export CONTAINER_VARS_FILE="$BUILD_SOURCESDIRECTORY/${{ parameters.service_name }}/ecs-proxies-containers.yml"
       echo "DEBUG: CONTAINER_VARS_FILE='${CONTAINER_VARS_FILE}'"
+
       source $(SERVICE_DIR)/.build_env_vars
 
       export ASSUMED_VERSION=$(echo $SERVICE_ARTIFACT_NAME | grep -E -o "v[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*" || true | tail -1)
@@ -208,7 +210,6 @@ steps:
 
     displayName: Retag ECS image
     condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''))
-
 
   - template: ../components/aws-assume-role.yml
     parameters:
