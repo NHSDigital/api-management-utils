@@ -194,7 +194,8 @@ steps:
   - bash: |
       set -e
 
-      proxy_vars_file="$(PROXY_VARS_FILE)"
+      proxy_vars_file="${PROXY_VARS_FILE}"
+      echo "DEBUG: proxy_vars_file='${proxy_vars_file}'"
       source $(SERVICE_DIR)/.build_env_vars
 
       export ASSUMED_VERSION=$(echo $SERVICE_ARTIFACT_NAME | grep -E -o "v[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*" || true | tail -1)
