@@ -1,6 +1,6 @@
 - name: Ensure docker_containers is loaded
   include_vars:
-    file: "{{ lookup('env', 'PROXY_VARS_FILE') }}"
+    file: "{{ lookup('env', 'CONTAINER_VARS_FILE') }}"
   when: docker_containers is not defined
 
 - name: Debug docker_containers (retag role)
@@ -18,7 +18,7 @@
 - name: Debug pulling image
   debug:
     msg: "Pulling {{ ecr_registry }}/{{ item }}:{{ build_label }}"
-  with_items: "{{ repo_names }}" 
+  with_items: "{{ repo_names }}"
 
 - name: Pull existing image {{ item }}:{{ build_label }}
   ansible.builtin.command:
