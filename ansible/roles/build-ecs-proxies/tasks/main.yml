@@ -28,7 +28,7 @@
 - name: create new repos
   command: "{{ aws_cmd }} ecr create-repository --repository-name {{ item }} --tags Key=api-service,Value={{ service_id }}"
   with_items: "{{ new_repos }}"
-  when: new_repos | length > 0
+  when: new_repos
 
 - name: Read lifecycle policy file
   ansible.builtin.slurp:

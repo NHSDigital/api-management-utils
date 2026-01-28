@@ -6,7 +6,8 @@
 
   vars:
     service_id: "{{ lookup('env','service_id') }}"
-    aws_profile: "build-{{ service_id | lower }}"
+    APIGEE_ENVIRONMENT: "{{ lookup('env','APIGEE_ENVIRONMENT') }}"
+    account:  "{{ lookup('env','account') }}"
 
   pre_tasks:
     - name: include container vars
