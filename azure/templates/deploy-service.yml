@@ -194,7 +194,7 @@ steps:
   - bash: |
       set -e
 
-      export CONTAINER_VARS_FILE="$BUILD_SOURCESDIRECTORY/${{ parameters.service_name }}/ecs-proxies-containers.yml"
+      export CONTAINER_VARS_FILE="$BUILD_SOURCESDIRECTORY/${{ parameters.service_name }}/$(BRANCH_NAME)+$(Build.BuildID)/ecs-proxies-containers.yml"
       echo "DEBUG: CONTAINER_VARS_FILE='${CONTAINER_VARS_FILE}'"
 
       source $(SERVICE_DIR)/.build_env_vars
