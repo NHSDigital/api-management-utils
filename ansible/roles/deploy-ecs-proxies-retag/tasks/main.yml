@@ -15,44 +15,62 @@
   debug:
     var: repo_names
 
+- name: Login to ECR
+  command: >
+    {{ aws_cmd }} ecr get-login-password --region {{ aws_region }}
+    | docker login --username AWS --password-stdin {{ ecr_registry }}
+
 - name: Debug pulling image
   debug:
     msg: "Pulling {{ ecr_registry }}/{{ item }}:{{ build_label }}"
-  with_items: "{{ repo_names }}"
+  loop: "{{ repo_names }}"
+  loop_control:
+    label: "{{ item }}"
 
-- name: Pull existing image {{ item }}:{{ build_label }}
+- name: Pull existing image
   ansible.builtin.command:
     cmd: >
       docker pull {{ ecr_registry }}/{{ item }}:{{ build_label }}
-  with_items: "{{ repo_names }}"
+  loop: "{{ repo_names }}"
+  loop_control:
+    label: "{{ item }}"
   register: pull_results
 
 - name: Debug retagging image
   debug:
     msg: "Retagging {{ item.item }}:{{ build_label }} → ecs-{{ build_label }}"
-  with_items: "{{ pull_results.results }}"
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
   when: item.rc == 0
 
-- name: Retag image {{ item.item }}:{{ build_label }} → ecs-{{ build_label }}
+- name: Retag image
   ansible.builtin.command:
     cmd: >
       docker tag
       {{ ecr_registry }}/{{ item.item }}:{{ build_label }}
       {{ ecr_registry }}/{{ item.item }}:ecs-{{ build_label }}
-  with_items: "{{ pull_results.results }}"
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
   when: item.rc == 0
 
 - name: Debug pushing image
   debug:
     msg: "Pushing ecs-{{ build_label }} for {{ item.item }}"
-  with_items: "{{ pull_results.results }}"
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
   when: item.rc == 0
 
-- name: Push new tag ecs-{{ build_label }} for {{ item.item }}
+- name: Push new tag
   ansible.builtin.command:
     cmd: >
       docker push {{ ecr_registry }}/{{ item.item }}:ecs-{{ build_label }}
-  with_items: "{{ pull_results.results }}"
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
   when: item.rc == 0
+
 
 
