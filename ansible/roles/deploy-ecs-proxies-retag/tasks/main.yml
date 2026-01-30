@@ -16,7 +16,7 @@
     var: repo_names
 
 - name: Login to ECR
-  command: >
+  shell: >
     {{ aws_cmd }} ecr get-login-password --region {{ aws_region }}
     | docker login --username AWS --password-stdin {{ ecr_registry }}
 
