@@ -49,7 +49,7 @@ locals {
         (
           container
           | combine(
-            {'image': '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/' + service_id + '_' + container.name + ':' + build_label }
+            {'image': '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/' + service_id + '_' + container.name + ':ecs-' + build_label }
           )
         ) | to_json
     }},

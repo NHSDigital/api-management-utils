@@ -1,0 +1,36 @@
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Keep the 10 most recent ECS deployment images - AMEND NUMBER AFTER TEST",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["ecs-"],
+        "countType": "imageCountMoreThan",
+        "countNumber": 800
+      },
+      "action": { "type": "expire" }
+    },
+    {
+      "rulePriority": 2,
+      "description": "Never expire the 'latest' tag",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["latest"],
+        "countType": "imageCountMoreThan",
+        "countNumber": 9999
+      },
+      "action": { "type": "expire" }
+    },
+    {
+      "rulePriority": 3,
+      "description": "Keep the 5 most recent build images (all tags) - AMEND NUMBER AFTER TEST",
+      "selection": {
+        "tagStatus": "any",
+        "countType": "imageCountMoreThan",
+        "countNumber": 800
+      },
+      "action": { "type": "expire" }
+    }
+  ]
+}
