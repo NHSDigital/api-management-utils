@@ -2,12 +2,12 @@
   "rules": [
     {
       "rulePriority": 1,
-      "description": "Keep the 10 most recent ECS deployment images - AMEND NUMBER AFTER TEST",
+      "description": "Keep the 6 most recent ECS deployment images tagged ecs- (release images)",
       "selection": {
         "tagStatus": "tagged",
         "tagPrefixList": ["ecs-"],
         "countType": "imageCountMoreThan",
-        "countNumber": 800
+        "countNumber": 6
       },
       "action": { "type": "expire" }
     },
@@ -24,11 +24,11 @@
     },
     {
       "rulePriority": 3,
-      "description": "Keep the 5 most recent build images (all tags) - AMEND NUMBER AFTER TEST",
+      "description": "Keep the 6 most recent build images (all tags)",
       "selection": {
         "tagStatus": "any",
         "countType": "imageCountMoreThan",
-        "countNumber": 800
+        "countNumber": 6
       },
       "action": { "type": "expire" }
     }

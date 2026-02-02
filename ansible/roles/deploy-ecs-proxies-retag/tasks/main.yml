@@ -30,7 +30,7 @@
 - name: Pull existing image
   ansible.builtin.command:
     cmd: >
-      docker pull {{ ecr_registry }}/{{ item }}:{{ build_label }}
+      docker pull --platform=all {{ ecr_registry }}/{{ item }}:{{ build_label }}
   loop: "{{ repo_names }}"
   loop_control:
     label: "{{ item }}"
@@ -42,7 +42,9 @@
   loop: "{{ pull_results.results }}"
   loop_control:
     label: "{{ item.item }}"
-  when: item.rc == 0
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
 
 - name: Retag image
   ansible.builtin.command:
@@ -53,7 +55,9 @@
   loop: "{{ pull_results.results }}"
   loop_control:
     label: "{{ item.item }}"
-  when: item.rc == 0
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
 
 - name: Debug pushing image
   debug:
@@ -61,7 +65,9 @@
   loop: "{{ pull_results.results }}"
   loop_control:
     label: "{{ item.item }}"
-  when: item.rc == 0
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
 
 - name: Push new tag
   ansible.builtin.command:
@@ -70,7 +76,20 @@
   loop: "{{ pull_results.results }}"
   loop_control:
     label: "{{ item.item }}"
-  when: item.rc == 0
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
 
-
-
+- name: Delete old tag from ECR
+  ansible.builtin.command:
+    cmd: >
+      aws ecr batch-delete-image
+      --repository-name {{ item.item }}
+      --image-ids imageTag={{ build_label }}
+      --region {{ aws_region }}
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
