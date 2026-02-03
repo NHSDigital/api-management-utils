@@ -233,6 +233,9 @@ steps:
         export DEPLOYED_VERSION="${{ parameters.fully_qualified_service_name }}"
       fi
 
+      export TF_VAR_use_ecs_tag=$([[ "${is_pull_request}" == "false" ]] && echo true || echo false)
+      export use_ecs_tag=$TF_VAR_use_ecs_tag
+
       account=${{ parameters.aws_account }} \
       PROXY_VARS_FILE="${proxy_vars_file}" \
       SOURCE_COMMIT_ID="$(Build.SourceVersion)" \

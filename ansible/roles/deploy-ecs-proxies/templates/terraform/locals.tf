@@ -54,7 +54,8 @@ ecs_service = [
               '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/'
               + service_id + '_' + container.name
               + (
-                  ":ecs-{{ build_label }}" if var.use_ecs_tag and container.name == "canary_canary-api"
+                  ":ecs-{{ build_label }}" 
+                  if use_ecs_tag and container.name == "canary-canary-api"
                   else ":{{ build_label }}"
                 )
           }
@@ -63,6 +64,7 @@ ecs_service = [
   }},
 {% endfor %}
 ]
+
 
 
   exposed_service = element(matchkeys(local.ecs_service, local.ecs_service.*.expose, list(true)), 0)
