@@ -45,6 +45,7 @@ locals {
 
 ecs_service = [
 {% for container in ecs_service %}
+{% raw %}
   {{
       (
         container
@@ -53,17 +54,16 @@ ecs_service = [
             'image':
               '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/'
               + service_id + '_' + container.name
-              {% raw %}
               + (
                   var.use_ecs_tag && container.name == "canary_canary-api"
                     ? ":ecs-${build_label}"
                     : ":${build_label}"
                 )
-              {% endraw %}
           }
         )
       ) | to_json
   }},
+{% endraw %}
 {% endfor %}
 ]
 
