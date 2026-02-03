@@ -10,8 +10,13 @@ def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str):
     s3 = boto3.client("s3")
     key = f"apis/{folder_name}/{file_path}"
 
-    try:
-        s3.upload_file(str(file_path), bucket_name, key)
+    try:        
+        s3.upload_file(
+            str(file_path),
+            bucket_name,
+            key,
+            ExtraArgs={'ACL': 'bucket-owner-full-control'}
+        )
         print(f"[OK] Uploaded → s3://{bucket_name}/apis/{key}")
     except ClientError as e:
         print(f"[ERROR] Upload failed: {file_path} → s3://{bucket_name}/{key}")
