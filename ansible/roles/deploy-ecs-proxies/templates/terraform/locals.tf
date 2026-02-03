@@ -54,7 +54,8 @@ ecs_service = [
               '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/'
               + service_id + '_' + container.name
               + (
-                  "{{ '${' }}var.use_ecs_tag && container.name == \"canary_canary-api\" ? \":ecs-${build_label}\" : \":${build_label}\"{{ '}' }}"
+                  ":ecs-{{ build_label }}" if var.use_ecs_tag and container.name == "canary_canary-api"
+                  else ":{{ build_label }}"
                 )
           }
         )
