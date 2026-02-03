@@ -53,7 +53,11 @@ ecs_service = [
             'image':
               '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/'
               + service_id + '_' + container.name
-              + (container.name == "canary_canary-api" ? ':ecs-' + build_label : ':' + build_label)
+              + (
+                  var.use_ecs_tag && container.name == "canary_canary-api"
+                    ? ":ecs-${build_label}"
+                    : ":${build_label}"
+                )
           }
         )
       ) | to_json
