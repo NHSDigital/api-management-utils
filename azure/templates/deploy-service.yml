@@ -192,6 +192,11 @@ steps:
     condition: and(succeeded(), eq(variables['deploy_containers'], 'true'))
 
   - bash: |
+      echo "##vso[task.setvariable variable=SERVICE_BASE_PATH_FOR_CONDITION]${{ parameters.service_base_path }}"
+    displayName: Set SERVICE_BASE_PATH_FOR_CONDITION
+
+
+  - bash: |
       set -e
 
       export CONTAINER_VARS_FILE="$SERVICE_DIR/ecs-proxies-containers.yml"
@@ -200,7 +205,7 @@ steps:
       echo "DEBUG (evaluated old path): $BUILD_SOURCESDIRECTORY/${{ parameters.service_name }}/${{ parameters.service_name }}-$(BRANCH_NAME)+$(Build.BuildID)/ecs-proxies-containers.yml"
 
       source $(SERVICE_DIR)/.build_env_vars
-      export SERVICE_BASE_PATH="${{parameters.service_base_path }}" 
+      export SERVICE_BASE_PATH="${{ parameters.service_base_path }}"
       echo "DEBUG: SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
 
       export ASSUMED_VERSION=$(echo $SERVICE_ARTIFACT_NAME | grep -E -o "v[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*" || true | tail -1)
@@ -215,7 +220,8 @@ steps:
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-ecs-proxies-retag
 
     displayName: Retag ECS image
-    condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), not(contains('${{ parameters.service_base_path }}', '-pr-')))
+    condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), not(contains(variables['SERVICE_BASE_PATH_FOR_CONDITION'], '-pr-')))
+
 
 
   - template: ../components/aws-assume-role.yml
@@ -238,6 +244,7 @@ steps:
       fi
 
       export TF_VAR_use_ecs_tag=$([[ "${is_pull_request}" == "false" ]] && echo true || echo false)
+      echo "DEBUG: TF_VAR_use_ecs_tag='${TF_VAR_use_ecs_tag}'"
       export use_ecs_tag=$TF_VAR_use_ecs_tag
 
       account=${{ parameters.aws_account }} \
