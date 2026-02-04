@@ -201,10 +201,15 @@ steps:
 
       source $(SERVICE_DIR)/.build_env_vars
 
+      export PULL_REQUEST="${{ parameters.pr_label }}"
+      echo "DEBUG: PULL_REQUEST='${PULL_REQUEST}'"
+
       export ASSUMED_VERSION=$(echo $SERVICE_ARTIFACT_NAME | grep -E -o "v[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*" || true | tail -1)
       export DEPLOYED_VERSION=${ASSUMED_VERSION:-${{ parameters.fully_qualified_service_name }}}
-      export TF_VAR_use_ecs_tag=$([[ "${is_pull_request}" == "false" ]] && echo true || echo false)
-        
+
+      export TF_VAR_use_ecs_tag=$([[ "${PULL_REQUEST}" == "false" ]] && echo true || echo false)
+      echo "DEBUG: TF_VAR_use_ecs_tag='${TF_VAR_use_ecs_tag}'"
+
       account=${{ parameters.aws_account }} \
       CONTAINER_VARS_FILE="${CONTAINER_VARS_FILE}" \
       SOURCE_COMMIT_ID="$(Build.SourceVersion)" \
@@ -212,7 +217,7 @@ steps:
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-ecs-proxies-retag
 
     displayName: Retag ECS image
-    condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), eq(variables['is_pull_request'], 'false'))
+    condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), eq('${{ parameters.pr_label }}', 'false'))
 
   - template: ../components/aws-assume-role.yml
     parameters:
