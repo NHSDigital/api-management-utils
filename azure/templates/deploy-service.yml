@@ -212,7 +212,8 @@ steps:
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-ecs-proxies-retag
 
     displayName: Retag ECS image
-    condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), not(contains(${{ parameters.service_base_path }}, 'pr')))
+    condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), not(contains('${{ parameters.service_base_path }}', '-pr-')))
+
 
   - template: ../components/aws-assume-role.yml
     parameters:
