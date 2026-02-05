@@ -21,7 +21,7 @@ def _metadata(spec_hash: Optional[str], temporary: Optional[bool] = False):
 
     return metadata or None
 
-def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str, temporary: bool = False):
+def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str, spec_hash: str, temporary: bool = False):
     """
     Upload a file to S3 with:
     - ACL bucket-owner-full-control
@@ -33,8 +33,8 @@ def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str, temporary:
     key = f"apis/{folder_name}/{file_path}"
 
     # --- Compute MD5 Hash for Metadata ---
-    spec_json = file_path.read_text(encoding="utf-8")
-    spec_hash = hashlib.md5(spec_json.encode("utf-8")).hexdigest()
+    #spec_json = file_path.read_text(encoding="utf-8")
+    #spec_hash = hashlib.md5(spec_json.encode("utf-8")).hexdigest()
 
     # Build complete metadata
     metadata = _metadata(spec_hash=spec_hash, temporary=temporary)
@@ -81,7 +81,11 @@ def main(bucket_name: str, repo_name: str):
     
     print(dst_json_file)
 
-    upload_to_s3("spec.json", bucket_name, repo_name)
+    spec_hash = hashlib.md5(dst_json_file.read_text(encoding="utf-8").encode("utf-8")).hexdigest()    
+
+    print(f"Computed MD5 hash: {spec_hash}")
+
+    upload_to_s3("spec.json", bucket_name, repo_name, spec_hash)
 
     print("[DONE] Processing complete.")
     return 0
