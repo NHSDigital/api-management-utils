@@ -30,7 +30,7 @@ def upload_to_s3(file_path: Path, bucket_name: str, folder_name: str, temporary:
     s3 = boto3.client("s3")
 
     # S3 key
-    key = f"apis/{folder_name}/{file_path.name}"
+    key = f"apis/{folder_name}/{file_path}"
 
     # --- Compute MD5 Hash for Metadata ---
     spec_json = file_path.read_text(encoding="utf-8")
