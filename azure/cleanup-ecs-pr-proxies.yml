@@ -61,9 +61,17 @@ jobs:
         displayName: cache utils pre-requisites 
 
       - bash: |
-          PATCH=$(curl -s https://api.github.com/repos/actions/python-versions/releases \
-            | jq -r '[.[] | .tag_name | select(startswith("3.13"))] | .[]' \
-            | sort -V | tail -n 1 | cut -d- -f1)
+          pyversion="3.13"
+          PATCH=curl -fsSL https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json \
+          | jq -r --arg pyversion "$pyversion" '
+            [ .[]
+              | select(.stable == true)
+              | .version
+              | select(test("^" + ($pyversion|gsub("\\.";"\\.")) + "\\.\\d+$"))
+              | split(".") | map(tonumber)
+            ]
+            | max
+            | join(".")'
 
           echo "##vso[task.setvariable variable=PY_VER]$PATCH"
           echo "Resolved latest python version: $PATCH"
@@ -73,7 +81,7 @@ jobs:
 
       - task: UsePythonVersion@0
         name: UsePy
-        displayName: 'Use Python $(PY_VER)'
+        displayName: 'Use Python 3.13'
         inputs:
           versionSpec: '$(PY_VER)'
 
