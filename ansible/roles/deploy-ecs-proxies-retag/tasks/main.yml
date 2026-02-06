@@ -1,0 +1,95 @@
+- name: Ensure docker_containers is loaded
+  include_vars:
+    file: "{{ lookup('env', 'CONTAINER_VARS_FILE') }}"
+  when: docker_containers is not defined
+
+- name: Debug docker_containers (retag role)
+  debug:
+    var: docker_containers
+
+- name: Debug containers (retag role)
+  debug:
+    var: containers
+
+- name: Debug repo_names (retag role)
+  debug:
+    var: repo_names
+
+- name: Login to ECR
+  shell: >
+    {{ aws_cmd }} ecr get-login-password --region {{ aws_region }}
+    | docker login --username AWS --password-stdin {{ ecr_registry }}
+
+- name: Debug pulling image
+  debug:
+    msg: "Pulling {{ ecr_registry }}/{{ item }}:{{ build_label }}"
+  loop: "{{ repo_names }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Pull existing image
+  ansible.builtin.command:
+    cmd: >
+      docker pull {{ ecr_registry }}/{{ item }}:{{ build_label }}
+  loop: "{{ repo_names }}"
+  loop_control:
+    label: "{{ item }}"
+  register: pull_results
+
+- name: Debug retagging image
+  debug:
+    msg: "Retagging {{ item.item }}:{{ build_label }} → ecs-{{ build_label }}"
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
+
+- name: Retag image
+  ansible.builtin.command:
+    cmd: >
+      docker tag
+      {{ ecr_registry }}/{{ item.item }}:{{ build_label }}
+      {{ ecr_registry }}/{{ item.item }}:ecs-{{ build_label }}
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
+
+- name: Debug pushing image
+  debug:
+    msg: "Pushing ecs-{{ build_label }} for {{ item.item }}"
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
+
+- name: Push new tag
+  ansible.builtin.command:
+    cmd: >
+      docker push {{ ecr_registry }}/{{ item.item }}:ecs-{{ build_label }}
+  loop: "{{ pull_results.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - item.rc == 0
+    - item.item == "canary_canary-api"
+
+# - name: Delete old tag from ECR
+#   ansible.builtin.command:
+#     cmd: >
+#       aws ecr batch-delete-image
+#       --repository-name {{ item.item }}
+#       --image-ids imageTag={{ build_label }}
+#       --region {{ aws_region }}
+#   loop: "{{ pull_results.results }}"
+#   loop_control:
+#     label: "{{ item.item }}"
+#   when:
+#     - item.rc == 0
+#     - item.item == "canary_canary-api"
