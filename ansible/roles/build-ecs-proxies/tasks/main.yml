@@ -30,6 +30,29 @@
   with_items: "{{ new_repos }}"
   when: new_repos
 
+# TO DO- Add back in once confirmed lifecycle policy to be applied to all new repos.
+
+# - name: Read lifecycle policy file
+#   ansible.builtin.slurp:
+#     src: "{{ playbook_dir }}/ecr-lifecycle/ecr_lifecycle.json"
+#   register: desired_policy_raw
+#   when: new_repos | length > 0
+
+# - name: Decode lifecycle policy JSON
+#   set_fact:
+#     desired_policy_json: "{{ desired_policy_raw.content | b64decode | from_json }}"
+#   when: new_repos | length > 0
+
+# - name: Apply lifecycle policy to each new repo
+#   ansible.builtin.command: >
+#     {{ aws_cmd }} ecr put-lifecycle-policy
+#     --repository-name {{ item }}
+#     --lifecycle-policy-text '{{ desired_policy_json | to_json }}'
+#   with_items: "{{ new_repos }}"
+#   register: lifecycle_update
+#   ignore_errors: yes
+#   when: new_repos | length > 0
+
 - name: ecr login
   shell: "eval $({{ aws_cmd }} ecr get-login --no-include-email)"
   changed_when: no

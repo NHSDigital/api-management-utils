@@ -72,3 +72,8 @@ variable "autoscaling_scale_out_cooldown" {
 variable "deregistration_delay" {
   type = number
 }
+
+variable "use_ecs_tag" {
+  type = bool
+  description = "Whether to use ecs- prefixed tag for canary-api"
+}
