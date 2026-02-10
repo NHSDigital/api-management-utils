@@ -69,6 +69,8 @@ data "aws_iam_policy_document" "ecs-execution-role" {
       "ecr:DescribeRepositories",
       "ecr:ListImages",
       "ecr:DescribeImages",
+      "ecr:GetLifecyclePolicy",
+      "ecr:PutLifecyclePolicy",
       "s3:GetObject"
     ]
 
@@ -171,6 +173,18 @@ data "aws_iam_policy_document" "deploy-user" {
       "*"
     ]
 
+  }
+
+  statement {
+    actions = [
+      "ecr:GetLifecyclePolicy",
+      "ecr:PutLifecyclePolicy"
+    ]
+
+    resources = [
+      "arn:aws:ecr:${local.region}:${local.account_id}:repository/${var.service_id}",
+      "arn:aws:ecr:${local.region}:${local.account_id}:repository/${var.service_id}_*"
+    ]
   }
 
   statement {

@@ -44,6 +44,7 @@ aws_ecs_policy:
         - "ecr:StartImageScan"
         - "ecr:StartLifecyclePolicyPreview"
         - "ecr:UploadLayerPart"
+        - "ecr:PutLifecyclePolicy"
       Resource: [
         "arn:aws:ecr:{{ aws_region }}:{{ aws_account_id }}:repository/{{ service_id }}_*"
       ]

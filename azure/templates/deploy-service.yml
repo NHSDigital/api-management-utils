@@ -191,12 +191,43 @@ steps:
     displayName: Create ECS Prerequisites
     condition: and(succeeded(), eq(variables['deploy_containers'], 'true'))
 
+  - bash: |
+      echo "##vso[task.setvariable variable=SERVICE_BASE_PATH_FOR_CONDITION]${{ parameters.service_base_path }}"
+    displayName: Set SERVICE_BASE_PATH_FOR_CONDITION
+
+
+  - bash: |
+      set -e
+
+      export CONTAINER_VARS_FILE="$SERVICE_DIR/ecs-proxies-containers.yml"
+      
+      echo "DEBUG: CONTAINER_VARS_FILE='${CONTAINER_VARS_FILE}'"
+      echo "DEBUG (evaluated old path): $BUILD_SOURCESDIRECTORY/${{ parameters.service_name }}/${{ parameters.service_name }}-$(BRANCH_NAME)+$(Build.BuildID)/ecs-proxies-containers.yml"
+
+      source $(SERVICE_DIR)/.build_env_vars
+      export SERVICE_BASE_PATH="${{ parameters.service_base_path }}"
+      echo "DEBUG: SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
+
+      export ASSUMED_VERSION=$(echo $SERVICE_ARTIFACT_NAME | grep -E -o "v[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*" || true | tail -1)
+      export DEPLOYED_VERSION=${ASSUMED_VERSION:-${{ parameters.fully_qualified_service_name }}}
+
+      account=${{ parameters.aws_account }} \
+      CONTAINER_VARS_FILE="${CONTAINER_VARS_FILE}" \
+      SOURCE_COMMIT_ID="$(Build.SourceVersion)" \
+      RELEASE_RELEASEID="$(Build.BuildId)" \
+      make --no-print-directory -C $(UTILS_DIR)/ansible deploy-ecs-proxies-retag
+
+    displayName: Retag ECS image
+    condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), not(contains(variables['SERVICE_BASE_PATH_FOR_CONDITION'], '-pr-')))
+
+
+
   - template: ../components/aws-assume-role.yml
     parameters:
       role: "$(DEPLOY_ROLE)"
       profile: "$(DEPLOY_ROLE)"
       aws_account: "${{ parameters.aws_account }}"
-
+  
   - bash: |
       set -e
       proxy_vars_file="$(PROXY_VARS_FILE)"
@@ -209,6 +240,18 @@ steps:
       else
         export DEPLOYED_VERSION="${{ parameters.fully_qualified_service_name }}"
       fi
+      
+      
+      if [[ "$SERVICE_BASE_PATH_FOR_CONDITION" == *"-pr-"* ]]; then
+        export TF_VAR_use_ecs_tag=false
+      else
+        export TF_VAR_use_ecs_tag=true
+      fi
+
+      echo "DEBUG: TF_VAR_use_ecs_tag='${TF_VAR_use_ecs_tag}'"
+      echo "DEBUG: SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
+
+      export use_ecs_tag=$TF_VAR_use_ecs_tag
 
       account=${{ parameters.aws_account }} \
       PROXY_VARS_FILE="${proxy_vars_file}" \
@@ -216,6 +259,7 @@ steps:
       RELEASE_RELEASEID="$(Build.BuildId)" \
       SERVICE_BASE_PATH=${{ parameters.service_base_path }} \
       APIGEE_ENVIRONMENT=${{ parameters.apigee_environment }} \
+      use_ecs_tag="${use_ecs_tag}" \
       make --no-print-directory  -C $(UTILS_DIR)/ansible deploy-ecs-proxies
 
     displayName: Deploy ECS proxies
@@ -347,6 +391,7 @@ steps:
         echo "_status endpoint monitoring is disabled"
       displayName: Disable _status monitoring
       condition: and(succeeded(), eq(variables['check_and_enable_status'], 'false'), eq(variables['is_pull_request'], 'false'))
+
 
     - bash: |
         set -euo pipefail
