@@ -243,9 +243,9 @@ steps:
       
       
       if [[ "$SERVICE_BASE_PATH_FOR_CONDITION" == *"-pr-"* ]]; then
-        export TF_VAR_use_ecs_tag=false
-      else
         export TF_VAR_use_ecs_tag=true
+      else
+        export TF_VAR_use_ecs_tag=false
       fi
 
       echo "DEBUG: TF_VAR_use_ecs_tag='${TF_VAR_use_ecs_tag}'"
