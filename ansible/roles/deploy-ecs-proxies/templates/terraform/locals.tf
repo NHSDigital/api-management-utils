@@ -51,7 +51,7 @@ ecs_service = [
         + service_id + '_' + container.name
         + (
             ":ecs-" + build_label
-            if use_ecs_tag and container.name == "canary-api"
+            if use_ecs_tag and container.name == "cnary-api"
             else ":" + build_label
           )
     )

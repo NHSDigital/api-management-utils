@@ -43,9 +43,6 @@ create-build-env-vars: guard-build_label guard-out_dir
 	@poetry run ansible-playbook -i local create-build-env-vars.yml
 
 deploy-ecs-proxies: guard-account guard-build_label guard-service_id guard-APIGEE_ENVIRONMENT guard-PROXY_VARS_FILE
-	@echo "MAKE RAW: use_ecs_tag='${use_ecs_tag}'"
-	@echo "MAKE LENGTH: $${#use_ecs_tag}"
-	@echo "MAKE BYTES: $(printf '%s' "${use_ecs_tag}" | hexdump -C)"
 	@poetry run ansible-playbook -i local deploy-ecs-proxies.yml \
 
 deploy-ecs-proxies-retag: guard-build_label guard-service_id guard-PROXY_VARS_FILE

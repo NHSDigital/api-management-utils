@@ -51,9 +51,6 @@
       set_fact:
         use_ecs_tag: "{{ use_ecs_tag | lower == 'true' }}"
 
-    - name: debug use_ecs_tag type
-      debug:
-        msg: "VALUEDEPLOYYAML={{ use_ecs_tag }} TYPE={{ use_ecs_tag | type_debug }}"
 
   roles:
     - setup-facts
