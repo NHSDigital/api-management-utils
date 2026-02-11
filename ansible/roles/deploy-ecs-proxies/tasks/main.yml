@@ -76,7 +76,6 @@
         msg: >
           ANSIBLE: use_ecs_tag='{{ use_ecs_tag }}'
           TYPE={{ use_ecs_tag | type_debug }}
-          LENGTH={{ use_ecs_tag | length }}
           TF_VAR_use_ecs_tag='{{ use_ecs_tag | ternary("true","false") }}'
 
     - name: terraform plan

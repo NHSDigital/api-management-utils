@@ -53,7 +53,7 @@
 
     - name: debug use_ecs_tag type
       debug:
-        msg: "VALUEDEPLOYYAML={{ use_ecs_tag }} TYPE={{ use_ecs_tag | type_debug }} LENGTH={{ use_ecs_tag | length }}"
+        msg: "VALUEDEPLOYYAML={{ use_ecs_tag }} TYPE={{ use_ecs_tag | type_debug }}"
 
   roles:
     - setup-facts
