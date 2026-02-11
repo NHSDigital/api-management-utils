@@ -71,9 +71,13 @@
       with_filetree: "{{ '../templates' }}"
       when: item.state == 'file'
 
-    - name: debug use_ecs_tag before terraform
+    - name: ansible debug use_ecs_tag before terraform
       debug:
-        msg: "ANSIBLE: use_ecs_tag={{ use_ecs_tag }} TF_VAR_use_ecs_tag={{ use_ecs_tag | ternary('true','false') }}"
+        msg: >
+          ANSIBLE: use_ecs_tag='{{ use_ecs_tag }}'
+          TYPE={{ use_ecs_tag | type_debug }}
+          LENGTH={{ use_ecs_tag | length }}
+          TF_VAR_use_ecs_tag='{{ use_ecs_tag | ternary("true","false") }}'
 
     - name: terraform plan
       shell: "TF_VAR_use_ecs_tag={{ use_ecs_tag | ternary('true','false') }} make -C {{ out_dir }}/terraform clean plan args='-no-color -lock-timeout=30m -out tfplan.out'" # noqa 305
