@@ -46,13 +46,6 @@ locals {
 ecs_service = [
 {% for container in ecs_service %}
 
-  # DEBUG: print the boolean value Jinja sees
-  {% if use_ecs_tag %}
-    {% set _ = print("DEBUG: use_ecs_tag = TRUE") %}
-  {% else %}
-    {% set _ = print("DEBUG: use_ecs_tag = FALSE") %}
-  {% endif %}
-
   {% set image_tag = (
         '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/'
         + service_id + '_' + container.name
