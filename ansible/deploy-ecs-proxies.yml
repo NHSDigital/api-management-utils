@@ -39,6 +39,14 @@
         msg: "SERVICE_BASE_PATH not set"
       when: not SERVICE_BASE_PATH
 
+    - name: debug use_ecs_tag type
+      debug:
+        msg: "VALUEDEPLOYYAML={{ use_ecs_tag }} TYPE={{ use_ecs_tag | type_debug }}"
+
+    - name: include vars
+      include_vars:
+        file: "{{ lookup('env', 'PROXY_VARS_FILE') | expandvars | expanduser | realpath }}"
+    
     - name: load use_ecs_tag from environment
       set_fact:
         use_ecs_tag: "{{ lookup('env','use_ecs_tag') | default('false') }}"
@@ -46,10 +54,6 @@
     - name: normalise use_ecs_tag to boolean
       set_fact:
         use_ecs_tag: "{{ use_ecs_tag | lower == 'true' }}"
-
-    - name: include vars
-      include_vars:
-        file: "{{ lookup('env', 'PROXY_VARS_FILE') | expandvars | expanduser | realpath }}"
 
     - name: debug use_ecs_tag type
       debug:
