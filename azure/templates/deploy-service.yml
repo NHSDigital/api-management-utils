@@ -201,12 +201,9 @@ steps:
 
       export CONTAINER_VARS_FILE="$SERVICE_DIR/ecs-proxies-containers.yml"
       
-      echo "DEBUG: CONTAINER_VARS_FILE='${CONTAINER_VARS_FILE}'"
-      echo "DEBUG (evaluated old path): $BUILD_SOURCESDIRECTORY/${{ parameters.service_name }}/${{ parameters.service_name }}-$(BRANCH_NAME)+$(Build.BuildID)/ecs-proxies-containers.yml"
-
       source $(SERVICE_DIR)/.build_env_vars
       export SERVICE_BASE_PATH="${{ parameters.service_base_path }}"
-      echo "DEBUG: SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
+      echo "SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
 
       export ASSUMED_VERSION=$(echo $SERVICE_ARTIFACT_NAME | grep -E -o "v[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*" || true | tail -1)
       export DEPLOYED_VERSION=${ASSUMED_VERSION:-${{ parameters.fully_qualified_service_name }}}
@@ -248,8 +245,8 @@ steps:
         export TF_VAR_use_ecs_tag=true
       fi
 
-      echo "DEBUG: TF_VAR_use_ecs_tag='${TF_VAR_use_ecs_tag}'"
-      echo "DEBUG: SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
+      echo "TF_VAR_use_ecs_tag='${TF_VAR_use_ecs_tag}'"
+      echo "SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
 
       export use_ecs_tag=$TF_VAR_use_ecs_tag
 

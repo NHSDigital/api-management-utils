@@ -3,26 +3,14 @@
     file: "{{ lookup('env', 'CONTAINER_VARS_FILE') }}"
   when: docker_containers is not defined
 
-- name: Debug docker_containers (retag role)
-  debug:
-    var: docker_containers
-
-- name: Debug containers (retag role)
-  debug:
-    var: containers
-
-- name: Debug repo_names (retag role)
-  debug:
-    var: repo_names
-
 - name: Login to ECR
   shell: >
     {{ aws_cmd }} ecr get-login-password --region {{ aws_region }}
     | docker login --username AWS --password-stdin {{ ecr_registry }}
 
-- name: Debug pulling image
+- name: Pulling ECR image
   debug:
-    msg: "Pulling {{ ecr_registry }}/{{ item }}:{{ build_label }}"
+    msg: "Pulling {{ item }}:{{ build_label }}"
   loop: "{{ repo_names }}"
   loop_control:
     label: "{{ item }}"
@@ -36,7 +24,7 @@
     label: "{{ item }}"
   register: pull_results
 
-- name: Debug retagging image
+- name: Retagging ECR image
   debug:
     msg: "Retagging {{ item.item }}:{{ build_label }} → ecs-{{ build_label }}"
   loop: "{{ pull_results.results }}"
@@ -59,7 +47,7 @@
     - item.rc == 0
     - item.item == "canary_canary-api"
 
-- name: Debug pushing image
+- name: Pushing ECR image
   debug:
     msg: "Pushing ecs-{{ build_label }} for {{ item.item }}"
   loop: "{{ pull_results.results }}"

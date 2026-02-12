@@ -71,7 +71,7 @@
       with_filetree: "{{ '../templates' }}"
       when: item.state == 'file'
 
-    - name: ansible debug use_ecs_tag before terraform
+    - name: ansible use_ecs_tag before terraform
       debug:
         msg: >
           ANSIBLE: use_ecs_tag='{{ use_ecs_tag }}'
@@ -83,11 +83,6 @@
       register: tfplan
       failed_when: tfplan.rc not in (0, 2)
       when: not do_not_terraform
-
-    - name: print full terraform plan output (lines)
-      debug:
-        var: tfplan.stdout_lines
-      when: tfplan is defined
 
     - name: terraform apply
       shell: "TF_VAR_use_ecs_tag={{ use_ecs_tag | ternary('true','false') }} make -C {{ out_dir }}/terraform apply-plan args='-no-color -lock-timeout=30m --auto-approve tfplan.out'" # noqa 305
