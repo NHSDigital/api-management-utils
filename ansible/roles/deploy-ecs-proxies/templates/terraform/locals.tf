@@ -43,18 +43,34 @@ locals {
 
   }
 
-  ecs_service = [
-  {% for container in ecs_service %}
-    {{
-        (
-          container
-          | combine(
-            {'image': '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/' + service_id + '_' + container.name + ':' + build_label }
+ecs_service = [
+{% for container in ecs_service %}
+
+  {% set image_tag = (
+        '${local.account_id}.dkr.ecr.eu-west-2.amazonaws.com/'
+        + service_id + '_' + container.name
+        + (
+            ":ecs-" + build_label
+            if use_ecs_tag and container.name == "canary-api"
+            else ":" + build_label
           )
-        ) | to_json
-    }},
-  {% endfor %}
-  ]
+    )
+  %}
+
+
+  {{
+      (
+        container
+        | combine(
+          {
+            'image': image_tag
+          }
+        )
+      ) | to_json
+  }},
+
+{% endfor %}
+]
 
   exposed_service = element(matchkeys(local.ecs_service, local.ecs_service.*.expose, list(true)), 0)
 
