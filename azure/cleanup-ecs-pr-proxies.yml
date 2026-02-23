@@ -61,7 +61,7 @@ jobs:
         displayName: cache utils pre-requisites 
 
       - bash: |
-          pyversion=${{ parameters.python_version }}
+          pyversion="3.13"
           PATCH=$(curl -fsSL https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json \
           | jq -r --arg pyversion "$pyversion" '[ .[] | select(.stable == true) | .version
           | select(test("^" + ($pyversion|gsub("\\.";"\\.")) + "\\.\\d+$")) | split(".") | map(tonumber)] | max | join(".")')
