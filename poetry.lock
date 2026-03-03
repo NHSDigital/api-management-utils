@@ -17,14 +17,14 @@ ansible-core = ">=2.19.4,<2.20.0"
 
 [[package]]
 name = "ansible-core"
-version = "2.19.4"
+version = "2.19.7"
 description = "Radically simple IT automation"
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "ansible_core-2.19.4-py3-none-any.whl", hash = "sha256:f218e2e8ce4cc95216c48c73badd9789f1dd6ea47e15667213491fb79589316c"},
-    {file = "ansible_core-2.19.4.tar.gz", hash = "sha256:888db6593f2fd42cd05bdbe546704d9c969dce99e3373a54498f6dbefcfa1917"},
+    {file = "ansible_core-2.19.7-py3-none-any.whl", hash = "sha256:edeaadbff4eeaf0e677ae11b2ea9cc4faf9a250a59923a55e48fcb10cd66f35a"},
+    {file = "ansible_core-2.19.7.tar.gz", hash = "sha256:7d6f53dc33fc3defbe437b88bfaf87b3f7abbc56c4f1691e59342166c70bbebd"},
 ]
 
 [package.dependencies]
@@ -1475,4 +1475,4 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "036f09b5b42f55f55354b3fd3abd530cd34c7a02acc75755a4fa896b6fc01b7b"
+content-hash = "e66c61064607a1b90faae76fec64b40646628090bf34f29c8ede01a74899fc7d"
