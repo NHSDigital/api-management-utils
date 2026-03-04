@@ -36,20 +36,20 @@ resolvelib = ">=0.5.3,<2.0.0"
 
 [[package]]
 name = "awscli"
-version = "1.38.29"
+version = "1.38.38"
 description = "Universal Command Line Environment for AWS."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "awscli-1.38.29-py3-none-any.whl", hash = "sha256:a13c6a9c6a29b48a0b7bb2a0432a400aeabbac158f430a5bd6d1b5f717d441a8"},
-    {file = "awscli-1.38.29.tar.gz", hash = "sha256:1f4176e606a40a6353aefc5f823801e56805b0634a9797d039188a9ef590e070"},
+    {file = "awscli-1.38.38-py3-none-any.whl", hash = "sha256:1255c115108cf7d7612d66dc48a8db189b713d5a93a1fe9710d5005bc0e27230"},
+    {file = "awscli-1.38.38.tar.gz", hash = "sha256:4a85cd26c6ec20253b99f5cc736e849ab4deaf11ce1e13fe88129598f4c90b85"},
 ]
 
 [package.dependencies]
-botocore = "1.37.29"
+botocore = "1.37.38"
 colorama = ">=0.2.5,<0.4.7"
-docutils = ">=0.10,<0.17"
+docutils = ">=0.18.1,<=0.19"
 PyYAML = ">=3.10,<6.1"
 rsa = ">=3.1.2,<4.8"
 s3transfer = ">=0.11.0,<0.12.0"
@@ -76,14 +76,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.37.29"
+version = "1.37.38"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "botocore-1.37.29-py3-none-any.whl", hash = "sha256:092c41e346df37a8d7cf60a799791f8225ad3a5ba7cda749047eb31d1440b9c5"},
-    {file = "botocore-1.37.29.tar.gz", hash = "sha256:728c1ef3b66a0f79bc08008a59f6fd6bef2a0a0195e5b3b9e9bef255df519890"},
+    {file = "botocore-1.37.38-py3-none-any.whl", hash = "sha256:23b4097780e156a4dcaadfc1ed156ce25cb95b6087d010c4bb7f7f5d9bc9d219"},
+    {file = "botocore-1.37.38.tar.gz", hash = "sha256:c3ea386177171f2259b284db6afc971c959ec103fa2115911c4368bea7cbbc5d"},
 ]
 
 [package.dependencies]
@@ -547,14 +547,14 @@ files = [
 
 [[package]]
 name = "docutils"
-version = "0.16"
+version = "0.19"
 description = "Docutils -- Python Documentation Utilities"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "docutils-0.16-py2.py3-none-any.whl", hash = "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af"},
-    {file = "docutils-0.16.tar.gz", hash = "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"},
+    {file = "docutils-0.19-py3-none-any.whl", hash = "sha256:5e1de4d849fee02c63b040a4a3fd567f4ab104defd8a5511fbbc24a8a017efbc"},
+    {file = "docutils-0.19.tar.gz", hash = "sha256:33995a6753c30b7f577febfc2c50411fec6aac7f7ffeb7c4cfe5991072dcf9e6"},
 ]
 
 [[package]]
@@ -1462,4 +1462,4 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "1e2df1148edaaa825f6c7d41df1a69f2bb835167fd1b795be3521946f66ca488"
+content-hash = "1e9686f53d4af6903022e04285ddf0ff07bf2c5c1eaf90dee6ec380f3ad4e3c2"
