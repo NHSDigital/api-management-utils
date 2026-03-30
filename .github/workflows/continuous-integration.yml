@@ -6,20 +6,20 @@ jobs:
   test_deployments:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Scripts
-      uses: actions/checkout@v2
+      - name: Checkout Scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-    - name: Test Pull Request Deployments
-      env:
-        AZURE_TOKEN: "${{ secrets.AZURE_TOKEN }}"
-        AZ_CLIENT_ID: "${{ secrets.AZ_CLIENT_ID }}"
-        AZ_CLIENT_SECRET: "${{ secrets.AZ_CLIENT_SECRET }}"
-        AZ_CLIENT_TENANT: "${{ secrets.AZ_CLIENT_TENANT }}"
-      run: |
-        export BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-        export NOTIFY_COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
-        export UTILS_PR_NUMBER="${{ github.event.pull_request.number }}"
-        echo UTILS_PR_NUMBER=${UTILS_PR_NUMBER}
-        echo BRANCH_NAME=${BRANCH_NAME}
-        echo NOTIFY_COMMIT_SHA=${NOTIFY_COMMIT_SHA}
-        python3 scripts/test_pull_request_deployments.py
+      - name: Test Pull Request Deployments
+        env:
+          AZURE_TOKEN: "${{ secrets.AZURE_TOKEN }}"
+          AZ_CLIENT_ID: "${{ secrets.AZ_CLIENT_ID }}"
+          AZ_CLIENT_SECRET: "${{ secrets.AZ_CLIENT_SECRET }}"
+          AZ_CLIENT_TENANT: "${{ secrets.AZ_CLIENT_TENANT }}"
+        run: |
+          export BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          export NOTIFY_COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+          export UTILS_PR_NUMBER="${{ github.event.pull_request.number }}"
+          echo UTILS_PR_NUMBER=${UTILS_PR_NUMBER}
+          echo BRANCH_NAME=${BRANCH_NAME}
+          echo NOTIFY_COMMIT_SHA=${NOTIFY_COMMIT_SHA}
+          python3 scripts/test_pull_request_deployments.py

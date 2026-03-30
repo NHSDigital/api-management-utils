@@ -52,3 +52,5 @@ updates:
       interval: "daily"
     target-branch: "master"
     labels: ["dependencies", "github-actions"]
+    cooldown:
+      default-days: 7
