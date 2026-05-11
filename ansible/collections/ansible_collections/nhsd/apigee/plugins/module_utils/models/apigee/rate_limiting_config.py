@@ -2,13 +2,13 @@
 Pydantic class for the rateliming config JSON, attached to products
 and apps to control the ApplyRateLimiting shared flow.
 """
-from typing import Literal
+
+from typing import Literal, Optional
 
 from pydantic import BaseModel, conint, constr, Extra
 
 
 class ExcludeNoneModel(BaseModel):
-
     """
     Providing default values for ratelimiting here would mean that
     changing defaults required a redeploy for all proxies.
@@ -21,26 +21,27 @@ class ExcludeNoneModel(BaseModel):
     update the defaults for everyone by just by updating the shared
     flow.
     """
+
     def dict(self, **kwargs):
         kwargs["exclude_none"] = True
         return super().dict(**kwargs)
 
     class Config:
-        extra=Extra.forbid
+        extra = Extra.forbid
 
 
 class QuotaConfig(ExcludeNoneModel):
-    enabled: bool = None
+    enabled: Optional[bool] = None
     interval: conint(gt=0) = None
     limit: conint(gt=0) = None
     timeunit: Literal["minute", "hour", "day", "week", "month"] = None
 
 
 class SpikeArrestConfig(ExcludeNoneModel):
-    enabled: bool = None
-    ratelimit: constr(regex=r"^[1-9][0-9]*(ps|pm)$") = None
+    enabled: Optional[bool] = None
+    ratelimit: Optional[constr(regex=r"^[1-9][0-9]*(ps|pm)$")] = None
 
 
 class RateLimitingConfig(ExcludeNoneModel):
-    quota: QuotaConfig = None
-    spikeArrest: SpikeArrestConfig = None
+    quota: Optional[QuotaConfig] = None
+    spikeArrest: Optional[SpikeArrestConfig] = None

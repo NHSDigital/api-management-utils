@@ -1,5 +1,5 @@
 import json
-from typing import Union, Literal, List, Dict, Any, Type
+from typing import Optional, Union, Literal, List, Dict, Any, Type
 from typing_extensions import Annotated
 from pydantic import (
     Field,
@@ -110,18 +110,21 @@ PRODUCT_ATTRIBUTE_REGEX = (
     + ")$)"
 )
 
+
 class ApigeeProductAttributeOther(BaseModel):
     name: constr(regex=PRODUCT_ATTRIBUTE_REGEX)
     value: str
 
+
 ApigeeProductAttributeSpecial = Annotated[
-    Union [
+    Union[
         ApigeeProductAttributeAccess,
         ApigeeProductAttributeRateLimit,
         ApigeeProductAttributeRateLimiting,
     ],
-    Field(discriminator="name")
+    Field(discriminator="name"),
 ]
+
 
 def _count_cls(items: List[Any], cls: Type):
     return sum(isinstance(item, cls) for item in items)
@@ -130,9 +133,11 @@ def _count_cls(items: List[Any], cls: Type):
 class ApigeeProduct(BaseModel):
     name: str
     approvalType: Literal["auto", "manual"] = "manual"
-    attributes: List[Union[ApigeeProductAttributeSpecial, ApigeeProductAttributeOther]] = [{"name": "access", "value": "private"}]
-    description: str = None
-    displayName: str = None
+    attributes: List[
+        Union[ApigeeProductAttributeSpecial, ApigeeProductAttributeOther]
+    ] = [{"name": "access", "value": "private"}]
+    description: Optional[str] = None
+    displayName: Optional[str] = None
 
     # Note: This value is manually inserted by apigee_environment
     # object that contains this product. So if you do not provide a
