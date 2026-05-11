@@ -14,7 +14,7 @@ steps:
     displayName: Remove stale locks
 
   - bash: |
-      export retain_hours="${{ parameters.retain_hours }}"
+      export retain_hours="$retain_hours"
       ANSIBLE_FORCE_COLOR=yes make -C ansible remove-old-ecs-pr-deploys
       ERROR_CODE=$?
       echo ERROR_CODE - $ERROR_CODE
@@ -26,6 +26,7 @@ steps:
       else
         echo "##vso[task.setvariable variable=should_retry;]false"
       fi
-
+    env:
+      retain_hours: ${{ parameters.retain_hours }}
     displayName: cleanup older pr deploys
     condition: or(eq( ${{ parameters.retry }}, '0'), eq(variables['should_retry'], 'true'))

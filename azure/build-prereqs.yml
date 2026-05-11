@@ -1,7 +1,7 @@
 parameters:
-  - name: 'utils_dir'
+  - name: "utils_dir"
     type: string
-    default: 'utils'
+    default: "utils"
 
 steps:
   - bash: |
@@ -13,21 +13,13 @@ steps:
       echo "##vso[task.setvariable variable=PY_VER]$PATCH"
       echo "Resolved latest python version: $PATCH"
       echo "##vso[task.setvariable variable=LD_LIBRARY_PATH;]/agent/_work/_tool/Python/${PATCH}/x64/lib/"
-    displayName: 'Query and set python tool cache path'  
-
+    displayName: "Query and set python tool cache path"
 
   - task: UsePythonVersion@0
     name: UsePy
-    displayName: 'Use Python 3.13'
+    displayName: "Use Python 3.13"
     inputs:
-      versionSpec: '$(PY_VER)'
-
-  # - bash: |
-  #     echo "Checking the python version in use to set LD_LIBRARY_PATH"
-  #     echo "Python location: $(UsePy.pythonLocation)"
-  #     echo "##vso[task.setvariable variable=LD_LIBRARY_PATH]$(UsePy.pythonLocation)/lib"
-  #   displayName: 'Set LD_LIBRARY_PATH'
-  
+      versionSpec: "$(PY_VER)"
 
   - bash: |
       tfenv use 0.14.6
@@ -41,6 +33,8 @@ steps:
       if ! hash poetry 2>/dev/null; then
         pip3 install poetry
       fi
-      cd ${{ parameters.utils_dir }}
+      cd "$utils_dir"
       make install
+    env:
+      utils_dir: ${{ parameters.utils_dir }}
     displayName: "Install Utils dependencies"
