@@ -57,13 +57,12 @@ class ActionModule(ApigeeAction):
             name = step.find("Name")
             if name.text == args.policy_name:
                 return {"changed": False}
-                break
 
         result = {"changed": True}
         if diff_mode:
             result["diff"] = {
                 "before": etree.tostring(tree, pretty_print=True).decode(),
-                "before_header": str(proxies_file)
+                "before_header": str(proxies_file),
             }
 
         step = etree.Element("Step")
@@ -76,8 +75,8 @@ class ActionModule(ApigeeAction):
             result["diff"].update(
                 {
                     "after": etree.tostring(tree, pretty_print=True).decode(),
-                    "after_header": str(proxies_file)
-                 }
+                    "after_header": str(proxies_file),
+                }
             )
 
         if check_mode or result["changed"] is False:
