@@ -51,12 +51,10 @@ jobs:
 
     steps:
       - bash: |
-          if [ -n "$(ls -A "$(Pipeline.Workspace)/s/$service_name" 2>/dev/null)" ]; then
+          if [ ! -z "$(ls -A \"$(Pipeline.Workspace)/s/$(service_name)\" 2>/dev/null)" ]; then
             echo "workspace directory is not empty!"
             exit 1
           fi
-        env:
-          service_name: ${{ parameters.service_name }}
         displayName: "check workspace is clean"
 
       - bash: |
