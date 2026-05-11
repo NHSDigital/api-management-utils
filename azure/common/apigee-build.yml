@@ -45,14 +45,13 @@ jobs:
     variables:
       ${{ each var in parameters.variables }}:
         ${{ var.key }}: ${{ var.value }}
-    env:
       service_name: ${{ parameters.service_name }}
       service_short_name: ${{ parameters.short_service_name }}
       python_version: ${{ parameters.python_version }}
 
     steps:
       - bash: |
-          if [ -n "$(ls -A "$(Pipeline.Workspace)/s/$service_name" 2>/dev/null)" ]; then
+          if [ -n "$(ls -A "$(Pipeline.Workspace)/s/$(service_name)" 2>/dev/null)" ]; then
             echo "workspace directory is not empty!"
             exit 1
           fi
@@ -220,15 +219,15 @@ jobs:
         displayName: "Install utils "
 
       - bash: |
-          export out_dir="$(realpath $service_name/dist)"
-          export commit_hash="$(git -C $service_name rev-parse --short HEAD)"
+          export out_dir="$(realpath $(service_name)/dist)"
+          export commit_hash="$(git -C $(service_name) rev-parse --short HEAD)"
           # sha prefix is required docker gets upset if names contain -0 iirc
           export build_label="$(Build.BuildId)-sha${commit_hash}"
           export pr_number="$(PR_NUMBER)"
-          export service_name="$service_name"
-          export service_id="$service_short_name"
+          export service_name="$(service_name)"
+          export service_id="$(service_short_name)"
           export ANSIBLE_FORCE_COLOR=yes
-          make --no-print-directory -C "$service_name/utils/ansible" create-build-env-vars
+          make --no-print-directory -C "$(service_name)/utils/ansible" create-build-env-vars
         displayName: output build env vars for artifact
         condition: and(succeeded(), eq(variables['build_containers'], 'true'))
 
@@ -238,8 +237,8 @@ jobs:
         condition: and(succeeded(), eq(variables['build_containers'], 'true'))
 
       - bash: |
-          source "$service_name/dist/.build_env_vars"
-          account=ptl make --no-print-directory -C "$service_name/utils/ansible" create-ecr-build-role
+          source "$(service_name)/dist/.build_env_vars"
+          account=ptl make --no-print-directory -C "$(service_name)/utils/ansible" create-ecr-build-role
           echo "##vso[task.setvariable variable=BUILD_ROLE]build-${service_id}"
         displayName: "ensure build role"
         condition: and(succeeded(), eq(variables['build_containers'], 'true'))
@@ -250,9 +249,9 @@ jobs:
           profile: "$(BUILD_ROLE)"
 
       - bash: |
-          source "$service_name/dist/.build_env_vars"
-          CONTAINER_VARS_FILE="$(realpath $service_name/ecs-proxies-containers.yml)" \
-          make --no-print-directory -C "$service_name/utils/ansible" build-ecs-proxies
+          source "$(service_name)/dist/.build_env_vars"
+          CONTAINER_VARS_FILE="$(realpath $(service_name)/ecs-proxies-containers.yml)" \
+          make --no-print-directory -C "$(service_name)/utils/ansible" build-ecs-proxies
         displayName: "Build and push ECS proxies"
         condition: and(succeeded(), eq(variables['build_containers'], 'true'))
 
@@ -260,7 +259,7 @@ jobs:
           - ${{ post_ecs_push }}
 
       - bash: |
-          cp "$service_name"/ecs-*.yml "$service_name"/dist || true
+          cp "$(service_name)"/ecs-*.yml "$(service_name)"/dist || true
         displayName: "Copy ecs-proxies-deploy configs into build artifact"
         condition: and(succeeded(), eq(variables['build_containers'], 'true'))
 
@@ -285,7 +284,7 @@ jobs:
         displayName: "Validate manifest (template) and copy to artifact"
 
       - bash: |
-          cd "$service_name/utils"
+          cd "$(service_name)/utils"
           git rev-parse HEAD > ../dist/.utils-version
         displayName: Snapshot utils version
 

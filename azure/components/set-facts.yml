@@ -16,9 +16,6 @@ parameters:
   - name: apigee_organization
     type: string
 
-env:
-  service_name: ${{ parameters.service_name }}
-
 steps:
   - bash: |
       set -euo pipefail
@@ -27,11 +24,15 @@ steps:
       export SERVICE_ARTIFACT_NAME=`ls -t $(Pipeline.Workspace)/s/$service_name`
       echo "##vso[task.setvariable variable=SERVICE_ARTIFACT_NAME]$SERVICE_ARTIFACT_NAME"
       echo "Set Artifact Name of: $SERVICE_ARTIFACT_NAME"
+    env:
+      service_name: ${{ parameters.service_name }}
     displayName: "Set SERVICE_ARTIFACT_NAME"
 
   - bash: |
       echo "##vso[task.setvariable variable=SERVICE_DIR]$(Pipeline.Workspace)/s/$service_name/$(SERVICE_ARTIFACT_NAME)"
       echo "##vso[task.setvariable variable=UTILS_DIR]$(Pipeline.Workspace)/s/$service_name/$(SERVICE_ARTIFACT_NAME)/utils"
+    env:
+      service_name: ${{ parameters.service_name }}
     displayName: "Set SERVICE_DIR and UTILS_DIR for deploy-service"
 
   - bash: |
@@ -48,6 +49,8 @@ steps:
 
   - bash: 'echo "##vso[build.updatebuildnumber]$service_name-$(BRANCH_NAME)+$(Build.BuildID)"'
     condition: eq(variables['Build.SourceBranchName'], 'merge')
+    env:
+      service_name: ${{ parameters.service_name }}
     displayName: Update build ID if this is a pull request
 
   - template: ../components/get-aws-secrets-and-ssm-params.yml
