@@ -55,13 +55,16 @@ class ValidateManifest(pydantic.BaseModel):
         print(dist_dir)
         if not dist_dir:
             return manifest
+        changed = False
         apigee = manifest["apigee"]
         for env_dict in apigee["environments"]:
             for spec_dict in env_dict["specs"]:
                 path = spec_dict.get("path")
                 if path is not None:
                     spec_dict["path"] = os.path.join(dist_dir, path)
-        return manifest
+                    changed = True
+
+        return manifest if changed else manifest
 
     @pydantic.validator("manifest")
     def check_namespacing(cls, manifest, values):
