@@ -188,7 +188,6 @@ if __name__ == "__main__":
         should_clean_products=args["--products"],
         sandboxes_only=args["--sandbox-only"],
         dry_run=args["--dry-run"],
-        min_age=args["--min-age"],
         undeploy_only=args["--undeploy-only"],
         respect_prs=args["--respect-prs"],
     )
