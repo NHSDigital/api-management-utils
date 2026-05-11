@@ -16,12 +16,11 @@ jobs:
     displayName: Cleanup PR specs
     timeoutInMinutes: 240
     pool:
-      name: 'AWS-ECS'
+      name: "AWS-ECS"
     workspace:
       clean: all
 
     steps:
-
       - checkout: self
 
       - bash: |
@@ -48,7 +47,7 @@ jobs:
           key: poetry | utils | poetry.lock
           location: ".venv"
           debug: true
-          alias: 'Utils'
+          alias: "Utils"
         displayName: cache utils pre-requisites
 
       - bash: |
