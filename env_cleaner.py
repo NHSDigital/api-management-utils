@@ -88,6 +88,7 @@ def clean_proxies(
     undeploy_only: bool = False,
     respect_prs: bool = False,
 ):
+
     open_prs = set()
     if respect_prs:
         # Get open PRs, if there are any
@@ -153,12 +154,11 @@ def clean_env(
     should_clean_products: bool = False,
     sandboxes_only: bool = False,
     dry_run: bool = False,
-    min_age: Optional[int] = None,
     undeploy_only: bool = False,
     respect_prs: bool = False,
 ):
     if should_clean_specs:
-        clean_specs(client, env, dry_run)
+        clean_specs(client, dry_run)
 
     if should_clean_proxies:
         clean_proxies(
@@ -167,13 +167,12 @@ def clean_env(
             env,
             dry_run,
             sandboxes_only,
-            min_age,
             undeploy_only,
             respect_prs,
         )
 
     if should_clean_products:
-        clean_products(client, env, dry_run)
+        clean_products(client, dry_run)
 
 
 if __name__ == "__main__":
