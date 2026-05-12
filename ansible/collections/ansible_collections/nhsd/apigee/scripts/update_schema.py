@@ -12,7 +12,7 @@ from ansible_collections.nhsd.apigee.plugins.module_utils.models.manifest.manife
     Manifest,
 )
 
-SCHEMA_VERSION_REGEX = re.compile(r"^([1-9][0-9]*)\.([0-9]+)\.([0-9]+)$")
+SCHEMA_VERSION_REGEX = re.compile(r"^([1-9]\d*)\.(\d+)\.(\d+)$")
 
 
 class SchemaString:
@@ -61,10 +61,18 @@ class SchemaString:
         return self < other or self == other
 
     def __gt__(self, other):
-        return not self <= other
+        return (self.major, self.minor, self.patch) > (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
     def __ge__(self, other):
-        return not self < other
+        return (self.major, self.minor, self.patch) >= (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
     def valid_increments(self):
         return [
@@ -86,7 +94,7 @@ def main():
     schema_dir_glob = relative_schema_dir.glob("v*.json")
 
     SCHEMA_VERSION = SchemaString("1.0.0")
-    SCHEMA_FILE_NAME_PATTERN = re.compile(r"v([1-9][0-9]*\.[0-9]+\.[0-9]+)\.json$")
+    SCHEMA_FILE_NAME_PATTERN = re.compile(r"v([1-9]\d*\.\d+\.\d+)\.json$")
     for schema_file in schema_dir_glob:
         match = re.match(SCHEMA_FILE_NAME_PATTERN, schema_file.name)
         schema_version = SchemaString(match.group(1))
@@ -105,7 +113,7 @@ def main():
         fromfile=str(SCHEMA_VERSION),
         tofile=str(UPDATED_SCHEMA_VERSION),
     )
-    deltas = [delta for delta in deltas]
+    deltas = list(deltas)
 
     if not deltas:
         raise ValueError(

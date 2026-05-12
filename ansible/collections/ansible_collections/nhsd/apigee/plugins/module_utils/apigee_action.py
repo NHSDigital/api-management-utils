@@ -4,10 +4,10 @@ import json
 
 
 class ApigeeAction(ansible.plugins.action.ActionBase):
-    def validate_args(self, Validator: type[pydantic.BaseModel]):
+    def validate_args(self, validator: type[pydantic.BaseModel]):
         """Returns two-length tuple of validated_args and errors dicts."""
         try:
-            args = Validator(**self._task.args)
+            args = validator(**self._task.args)
             return args, {}
         except pydantic.ValidationError as e:
             return (

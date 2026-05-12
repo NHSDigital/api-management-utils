@@ -3,13 +3,8 @@ import sys
 from multiprocessing import Process
 from trigger_pipelines import AzureDevOps
 
-
 PULL_REQUEST_PIPELINES = {
-    "canary-api": {
-        "build": 222,
-        "pr": 223,
-        "branch": "refs/heads/main"
-    }
+    "canary-api": {"build": 222, "pr": 223, "branch": "refs/heads/main"}
 }
 
 
@@ -19,17 +14,10 @@ def trigger_pipelines(pipeline_ids: dict, service: str):
         service=service,
         pipeline_type="build",
         pipeline_id=pipeline_ids["build"],
-        pipeline_branch=pipeline_ids["branch"]
+        pipeline_branch=pipeline_ids["branch"],
     )
     if build_status != "succeeded":
         sys.exit(1)
-        return
-    # azure_dev_ops.run_pipeline(
-    #     service=service,
-    #     pipeline_type="pr",
-    #     pipeline_id=pipeline_ids["pr"],
-    #     pipeline_branch=pipeline_ids["branch"]
-    # )
 
 
 def main():
@@ -37,7 +25,10 @@ def main():
     for service, pipeline_ids in PULL_REQUEST_PIPELINES.items():
         process = Process(
             target=trigger_pipelines,
-            args=(pipeline_ids, service,)
+            args=(
+                pipeline_ids,
+                service,
+            ),
         )
         process.start()
         jobs.append(process)

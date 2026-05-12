@@ -32,7 +32,7 @@ class ActionModule(ApigeeAction):
         proxies_dir = args.dist_dir.joinpath(
             "proxies", args.proxy_dir, "apiproxy/proxies"
         )
-        proxies_files = [f for f in proxies_dir.glob("*.xml")]
+        proxies_files = list(proxies_dir.glob("*.xml"))
 
         if len(proxies_files) != 1:
             return {

@@ -2,18 +2,18 @@ from ansible.errors import AnsibleFilterError
 from ansible.plugins.filter.core import combine
 from collections import Counter
 
-_container_defaults = dict(
-    cpu=0,
-    port=9000,
-    protocol="TCP",
-    environment=[],
-    mountPoints=[],
-    secrets=[],
-    expose=True,
-    essential=True,
-    health_check=dict(matcher="200", path="/"),
-    lb_protocol="HTTP",
-)
+_container_defaults = {
+    "cpu": 0,
+    "port": 9000,
+    "protocol": "TCP",
+    "environment": [],
+    "mountPoints": [],
+    "secrets": [],
+    "expose": True,
+    "essential": True,
+    "health_check": {"matcher": "200", "path": "/"},
+    "lb_protocol": "HTTP",
+}
 
 
 def as_ecs_service(docker_service):
@@ -54,13 +54,13 @@ def as_ecs_service(docker_service):
     return ecs_service
 
 
-_app_scaling_defaults = dict(
-    service_metric="",
-    target_value=0,
-    scale_in_cooldown=300,
-    scale_out_cooldown=60,
-    enabled=False,
-)
+_app_scaling_defaults = {
+    "service_metric": "",
+    "target_value": 0,
+    "scale_in_cooldown": 300,
+    "scale_out_cooldown": 60,
+    "enabled": False,
+}
 
 _ecs_service_metrics = (
     "ALBRequestCountPerTarget",
