@@ -49,15 +49,6 @@ parameters:
       - portal_api_requires_callback_url
       - spec_file
 
-variables:
-  service_name: ${{ parameters.service_name }}
-  apigee_environment: ${{ parameters.apigee_environment }}
-  aws_account: ${{ parameters.aws_account }}
-  service_base_path: ${{ parameters.service_base_path }}
-  fully_qualified_service_name: ${{ parameters.fully_qualified_service_name }}
-  apigee_organization: ${{ parameters.apigee_organization }}
-  proxy_path: ${{ parameters.proxy_path }}
-
 steps:
   # Warn user they are passing deprecated variables to the deployment pipeline
   - ${{ each variable_name in parameters._deprecated_pipeline_variables }}:
@@ -70,12 +61,14 @@ steps:
             displayName: Warn ${{ variable_name }} is a deprecated pipeline parameter
   - bash: |
       ls -R
-      if [[ -f ecs-deploy-$(apigee_environment).yml ]] || [[ -f ecs-proxies-deploy.yml ]] || [[ -f ecs-proxies-deploy-sandbox.yml ]]; then
+      if [[ -f ecs-deploy-$apigee_environment.yml ]] || [[ -f ecs-proxies-deploy.yml ]] || [[ -f ecs-proxies-deploy-sandbox.yml ]]; then
         echo "##vso[task.setvariable variable=deploy_containers]true"
       else
         echo "##vso[task.setvariable variable=deploy_containers]false"
       fi
     workingDirectory: "$(SERVICE_DIR)"
+    env:
+      apigee_environment: ${{ parameters.apigee_environment }}
     displayName: "Check for ECS proxy definitions"
 
   - task: s3-cache-action@1
@@ -104,7 +97,11 @@ steps:
 
   - ${{ if parameters.proxy_path }}:
       - bash: |
-          echo "Deploying $(service_name) artifact $(SERVICE_ARTIFACT_NAME) as $(fully_qualified_service_name) to $(service_base_path) on $(ENV_URL)"
+          echo "Deploying $service_name artifact $(SERVICE_ARTIFACT_NAME) as $fully_qualified_service_name to $service_base_path on $(ENV_URL)"
+        env:
+          service_name: ${{ parameters.service_name }}
+          fully_qualified_service_name: ${{ parameters.fully_qualified_service_name }}
+          service_base_path: ${{ parameters.service_base_path }}
         displayName: "Deploy Info"
 
       - ${{ each pre_template_step in parameters.pre_template }}:
@@ -131,10 +128,10 @@ steps:
       - bash: |
           set -euo pipefail
 
-          export SERVICE_NAME="$(service_name)"
+          export SERVICE_NAME="$service_name"
           export PROXIES_DIR="$(SERVICE_DIR)/proxies"
-          export SERVICE_BASE_PATH="$(service_base_path)"
-          export APIGEE_ENVIRONMENT="$(apigee_environment)"
+          export SERVICE_BASE_PATH="$service_base_path"
+          export APIGEE_ENVIRONMENT="$apigee_environment"
           export HOSTED_TARGET_CONNECTION_PATH_SUFFIX="$hosted_target_connection_path_suffix"
           export HOSTED_TARGET_HEALTHCHECK_SUFFIX="$hosted_target_healthcheck_suffix"
           export SOURCE_COMMIT_ID=$(Build.SourceVersion)
@@ -144,7 +141,7 @@ steps:
           if [[ ! -z $ASSUMED_VERSION ]]; then
             export DEPLOYED_VERSION=$ASSUMED_VERSION
           else
-            export DEPLOYED_VERSION="$(fully_qualified_service_name)"
+            export DEPLOYED_VERSION="$fully_qualified_service_name"
           fi
 
           if [ -f  $(SERVICE_DIR)/.build_env_vars ]; then
@@ -157,11 +154,16 @@ steps:
 
           if [ -f $(SERVICE_DIR)/manifest.yml ]; then
               DIST_DIR=$(SERVICE_DIR) \
-              PROXY_DIR=$(proxy_path) \
+              PROXY_DIR=$proxy_path \
               ANSIBLE_FORCE_COLOR=yes \
               make --no-print-directory -C ansible add-apim-guids-policy
           fi
         env:
+          proxy_path: ${{ parameters.proxy_path }}
+          service_name: ${{ parameters.service_name }}
+          service_base_path: ${{ parameters.service_base_path }}
+          apigee_environment: ${{ parameters.apigee_environment }}
+          fully_qualified_service_name: ${{ parameters.fully_qualified_service_name }}
           hosted_target_connection_path_suffix: ${{ parameters.hosted_target_connection_path_suffix }}
           hosted_target_healthcheck_suffix: ${{ parameters.hosted_target_healthcheck_suffix }}
         displayName: Template proxies
@@ -177,8 +179,8 @@ steps:
 
       proxy_vars_file=""
 
-      if [ -f  $(SERVICE_DIR)/ecs-deploy-$(apigee_environment).yml ]; then
-        proxy_vars_file="$(SERVICE_DIR)/ecs-deploy-$(apigee_environment).yml"
+      if [ -f  $(SERVICE_DIR)/ecs-deploy-$apigee_environment.yml ]; then
+        proxy_vars_file="$(SERVICE_DIR)/ecs-deploy-$apigee_environment.yml"
       else
         if [ -f  $(SERVICE_DIR)/ecs-deploy-all.yml ]; then
           proxy_vars_file="$(SERVICE_DIR)/ecs-deploy-all.yml"
@@ -188,22 +190,28 @@ steps:
 
       if [[ ! -z "${proxy_vars_file}" ]]; then
         source $(SERVICE_DIR)/.build_env_vars
-        deploy_role="deploy-$(apigee_environment)-${service_id}"
+        deploy_role="deploy-$apigee_environment-${service_id}"
 
-        account=$(aws_account) \
-        SERVICE_BASE_PATH=$(service_base_path) \
-        APIGEE_ENVIRONMENT=$(apigee_environment) \
+        account=$aws_account \
+        SERVICE_BASE_PATH=$service_base_path \
+        APIGEE_ENVIRONMENT=$apigee_environment \
         make --no-print-directory  -C $(UTILS_DIR)/ansible create-api-deployment-pre-reqs
 
       fi
 
       echo "##vso[task.setvariable variable=PROXY_VARS_FILE]${proxy_vars_file}"
       echo "##vso[task.setvariable variable=DEPLOY_ROLE]${deploy_role}"
+    env:
+      apigee_environment: ${{ parameters.apigee_environment }}
+      service_base_path: ${{ parameters.service_base_path }}
+      aws_account: ${{ parameters.aws_account }}
     displayName: Create ECS Prerequisites
     condition: and(succeeded(), eq(variables['deploy_containers'], 'true'))
 
   - bash: |
-      echo "##vso[task.setvariable variable=SERVICE_BASE_PATH_FOR_CONDITION]$(service_base_path)"
+      echo "##vso[task.setvariable variable=SERVICE_BASE_PATH_FOR_CONDITION]$service_base_path"
+    env:
+      service_base_path: ${{ parameters.service_base_path }}
     displayName: Set SERVICE_BASE_PATH_FOR_CONDITION
 
   - bash: |
@@ -212,18 +220,21 @@ steps:
       export CONTAINER_VARS_FILE="$SERVICE_DIR/ecs-proxies-containers.yml"
 
       source $(SERVICE_DIR)/.build_env_vars
-      export SERVICE_BASE_PATH="$(service_base_path)"
+      export SERVICE_BASE_PATH="$service_base_path"
       echo "SERVICE_BASE_PATH='${SERVICE_BASE_PATH}'"
 
       export ASSUMED_VERSION=$(echo $SERVICE_ARTIFACT_NAME | grep -E -o "v[0-9]+\.[0-9]+\.[0-9]+-?[a-z]*" || true | tail -1)
-      export DEPLOYED_VERSION=${ASSUMED_VERSION:-$(fully_qualified_service_name)}
+      export DEPLOYED_VERSION=${ASSUMED_VERSION:-$fully_qualified_service_name}
 
-      account=$(aws_account) \
+      account=$aws_account \
       CONTAINER_VARS_FILE="${CONTAINER_VARS_FILE}" \
       SOURCE_COMMIT_ID="$(Build.SourceVersion)" \
       RELEASE_RELEASEID="$(Build.BuildId)" \
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-ecs-proxies-retag
-
+    env:
+      service_base_path: ${{ parameters.service_base_path }}
+      aws_account: ${{ parameters.aws_account }}
+      fully_qualified_service_name: ${{ parameters.fully_qualified_service_name }}
     displayName: Retag ECS image
     condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''), contains(variables['SERVICE_BASE_PATH_FOR_CONDITION'], 'canary'), not(contains(variables['SERVICE_BASE_PATH_FOR_CONDITION'], '-pr-')))
 
@@ -243,7 +254,7 @@ steps:
       if [[ ! -z $ASSUMED_VERSION ]]; then
         export DEPLOYED_VERSION=$ASSUMED_VERSION
       else
-        export DEPLOYED_VERSION="$(fully_qualified_service_name)"
+        export DEPLOYED_VERSION="$fully_qualified_service_name"
       fi
 
 
@@ -258,15 +269,19 @@ steps:
 
       export use_ecs_tag=$TF_VAR_use_ecs_tag
 
-      account=$(aws_account) \
+      account=$aws_account \
       PROXY_VARS_FILE="${proxy_vars_file}" \
       SOURCE_COMMIT_ID="$(Build.SourceVersion)" \
       RELEASE_RELEASEID="$(Build.BuildId)" \
-      SERVICE_BASE_PATH=$(service_base_path) \
-      APIGEE_ENVIRONMENT=$(apigee_environment) \
+      SERVICE_BASE_PATH=$service_base_path \
+      APIGEE_ENVIRONMENT=$apigee_environment \
       use_ecs_tag="${use_ecs_tag}" \
       make --no-print-directory  -C $(UTILS_DIR)/ansible deploy-ecs-proxies
-
+    env:
+      aws_account: ${{ parameters.aws_account }}
+      service_base_path: ${{ parameters.service_base_path }}
+      apigee_environment: ${{ parameters.apigee_environment }}
+      fully_qualified_service_name: ${{ parameters.fully_qualified_service_name }}
     displayName: Deploy ECS proxies
     condition: and(succeeded(), ne(variables['DEPLOY_ROLE'], ''))
 
@@ -274,18 +289,23 @@ steps:
       - bash: |
           set -euo pipefail
 
-          export PROXY_DIR="$(SERVICE_DIR)/proxies/$(proxy_path)"
-          export SERVICE_NAME="$(service_name)"
-          export FULLY_QUALIFIED_SERVICE_NAME="$(fully_qualified_service_name)"
-          export SERVICE_BASE_PATH="$(service_base_path)"
+          export PROXY_DIR="$(SERVICE_DIR)/proxies/$proxy_path"
+          export SERVICE_NAME="$service_name"
+          export FULLY_QUALIFIED_SERVICE_NAME="$fully_qualified_service_name"
+          export SERVICE_BASE_PATH="$service_base_path"
           export APIGEE_ACCESS_TOKEN="$(secret.AccessToken)"
-          export APIGEE_ENVIRONMENT="$(apigee_environment)"
-          export APIGEE_ORGANIZATION="nhsd-$(apigee_organization)"
+          export APIGEE_ENVIRONMENT="$apigee_environment"
+          export APIGEE_ORGANIZATION="nhsd-$apigee_organization"
           export PING="$ping"
           export ANSIBLE_FORCE_COLOR=yes
-
           make --no-print-directory -C $(UTILS_DIR)/ansible deploy-apigee-proxy
         env:
+          service_name: ${{ parameters.service_name }}
+          fully_qualified_service_name: ${{ parameters.fully_qualified_service_name }}
+          service_base_path: ${{ parameters.service_base_path }}
+          apigee_environment: ${{ parameters.apigee_environment }}
+          apigee_organization: ${{ parameters.apigee_organization }}
+          proxy_path: ${{ parameters.proxy_path }}
           ping: ${{ parameters.ping }}
         displayName: Deploy proxy
 
@@ -293,13 +313,15 @@ steps:
       set -euo pipefail
 
       export APIGEE_ACCESS_TOKEN="$(secret.AccessToken)"
-      export APIGEE_ENVIRONMENT="$(apigee_environment)"
-      export APIGEE_ORGANIZATION="nhsd-$(apigee_organization)"
+      export APIGEE_ENVIRONMENT="$apigee_environment"
+      export APIGEE_ORGANIZATION="nhsd-$apigee_organization"
       export ANSIBLE_FORCE_COLOR=yes
       export DIST_DIR=$(SERVICE_DIR)
       export PULL_REQUEST="$pr_label"
       make --no-print-directory -C $(UTILS_DIR)/ansible deploy-manifest
     env:
+      apigee_environment: ${{ parameters.apigee_environment }}
+      apigee_organization: ${{ parameters.apigee_organization }}
       pr_label: ${{ parameters.pr_label }}
     displayName: "Deploy Manifest"
 
