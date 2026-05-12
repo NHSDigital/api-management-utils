@@ -203,7 +203,7 @@ jobs:
       - checkout: common
         path: "s/${{ parameters.service_name }}/utils"
 
-      - task: s3-cache-action@1
+      - task: s3-cache-action@1.3.4
         inputs:
           key: poetry | $(System.DefaultWorkingDirectory) | ${{ parameters.service_name }}/utils/poetry.lock
           location: "${{ parameters.service_name }}/utils/.venv"

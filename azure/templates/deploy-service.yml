@@ -71,7 +71,7 @@ steps:
       apigee_environment: ${{ parameters.apigee_environment }}
     displayName: "Check for ECS proxy definitions"
 
-  - task: s3-cache-action@1
+  - task: s3-cache-action@1.3.4
     inputs:
       key: poetry | utils | $(UTILS_DIR)/poetry.lock
       location: "$(UTILS_DIR)/.venv"
