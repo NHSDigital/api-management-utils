@@ -137,7 +137,7 @@ class ApigeeProduct(BaseModel):
         Union[ApigeeProductAttributeSpecial, ApigeeProductAttributeOther]
     ] = [{"name": "access", "value": "private"}]
     description: Optional[str] = None
-    display_name: Optional[str] = None
+    display_name: Optional[str] = Field(None, alias="displayName")
 
     # Note: This value is manually inserted by apigee_environment
     # object that contains this product. So if you do not provide a
