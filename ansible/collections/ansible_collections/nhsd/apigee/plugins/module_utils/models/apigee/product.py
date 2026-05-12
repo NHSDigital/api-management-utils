@@ -137,7 +137,7 @@ class ApigeeProduct(BaseModel):
         Union[ApigeeProductAttributeSpecial, ApigeeProductAttributeOther]
     ] = [{"name": "access", "value": "private"}]
     description: Optional[str] = None
-    display_name: Optional[str] = Field(None, alias="displayName")
+    displayName: Optional[str] = None
 
     # Note: This value is manually inserted by apigee_environment
     # object that contains this product. So if you do not provide a
@@ -206,8 +206,8 @@ class ApigeeProduct(BaseModel):
             return [f"identity-service-{env}"]
         return proxies
 
-    @validator("display_name", always=True)
-    def validate_display_name(cls, display_name, values):
-        if not display_name:
+    @validator("displayName", always=True)
+    def validate_display_name(cls, displayName, values):
+        if not displayName:
             return values["name"]
-        return display_name
+        return displayName
