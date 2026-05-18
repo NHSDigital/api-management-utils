@@ -12,36 +12,45 @@ parameters:
     type: object
   - name: aws_account
     type: string
-    default: 'ptl'
+    default: "ptl"
   - name: apigee_organization
     type: string
 
 steps:
   - bash: |
       set -euo pipefail
-      echo "!!! Using ls -t will set the latest file for the artifact. If you get an error here, it is because '${{ parameters.service_name }}' is not the source alias name of the artifact"
+      echo "!!! Using ls -t will set the latest file for the artifact. If you get an error here, it is because '$service_name' is not the source alias name of the artifact"
       ls -R $(Pipeline.Workspace)
-      export SERVICE_ARTIFACT_NAME=`ls -t $(Pipeline.Workspace)/s/${{ parameters.service_name }}`
+      export SERVICE_ARTIFACT_NAME=`ls -t $(Pipeline.Workspace)/s/$service_name`
       echo "##vso[task.setvariable variable=SERVICE_ARTIFACT_NAME]$SERVICE_ARTIFACT_NAME"
       echo "Set Artifact Name of: $SERVICE_ARTIFACT_NAME"
-    displayName: 'Set SERVICE_ARTIFACT_NAME'
+    env:
+      service_name: ${{ parameters.service_name }}
+    displayName: "Set SERVICE_ARTIFACT_NAME"
 
   - bash: |
-      echo "##vso[task.setvariable variable=SERVICE_DIR]$(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)"
-      echo "##vso[task.setvariable variable=UTILS_DIR]$(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)/utils"
-    displayName: Set SERVICE_DIR and UTILS_DIR for deploy-service
+      echo "##vso[task.setvariable variable=SERVICE_DIR]$(Pipeline.Workspace)/s/$service_name/$(SERVICE_ARTIFACT_NAME)"
+      echo "##vso[task.setvariable variable=UTILS_DIR]$(Pipeline.Workspace)/s/$service_name/$(SERVICE_ARTIFACT_NAME)/utils"
+    env:
+      service_name: ${{ parameters.service_name }}
+    displayName: "Set SERVICE_DIR and UTILS_DIR for deploy-service"
 
   - bash: |
-      if [ -n "$(System.PullRequest.SourceBranch)" ]; then
-        export SOURCE_BRANCH="$(System.PullRequest.SourceBranch)"
+      if [ -n "$System_PullRequest_SourceBranch" ]; then
+        export SOURCE_BRANCH="$System_PullRequest_SourceBranch"
       else
-        export SOURCE_BRANCH="$(Build.SourceBranchName)"
+        export SOURCE_BRANCH="$Build_SourceBranchName"
       fi
       echo "##vso[task.setvariable variable=BRANCH_NAME]`echo $SOURCE_BRANCH | sed -r 's/[/|\\@":<>?*]+/-/g'`"
+    env:
+      System_PullRequest_SourceBranch: $(System.PullRequest.SourceBranch)
+      Build_SourceBranchName: $(Build.SourceBranchName)
     displayName: Set and replace invalid characters in branch name
 
-  - bash: 'echo "##vso[build.updatebuildnumber]${{ parameters.service_name }}-$(BRANCH_NAME)+$(Build.BuildID)"'
+  - bash: 'echo "##vso[build.updatebuildnumber]$service_name-$(BRANCH_NAME)+$(Build.BuildID)"'
     condition: eq(variables['Build.SourceBranchName'], 'merge')
+    env:
+      service_name: ${{ parameters.service_name }}
     displayName: Update build ID if this is a pull request
 
   - template: ../components/get-aws-secrets-and-ssm-params.yml

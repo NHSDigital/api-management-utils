@@ -1,22 +1,25 @@
 parameters:
-  - name: 'container_vars'
+  - name: "container_vars"
     type: string
-    default: 'ecs-proxies-containers.yml'
+    default: "ecs-proxies-containers.yml"
 
-  - name: 'env_vars_dir'
+  - name: "env_vars_dir"
     type: string
-    default: './'
+    default: "./"
 
-  - name: 'utils_dir'
+  - name: "utils_dir"
     type: string
-    default: 'utils'
+    default: "utils"
 
 steps:
   - bash: |
       set -e
-      source "${{ parameters.env_vars_dir }}/.build_env_vars"
+      source "$env_vars_dir/.build_env_vars"
 
       export CONTAINER_VARS_FILE="$SERVICE_DIR/ecs-proxies-containers.yml
 
-      make --no-print-directory -C ${{ parameters.utils_dir }}/ansible deploy-ecs-proxies-retag
+      make --no-print-directory -C $utils_dir/ansible deploy-ecs-proxies-retag
+    env:
+      env_vars_dir: ${{ parameters.env_vars_dir }}
+      utils_dir: ${{ parameters.utils_dir }}
     displayName: "Retag ECS proxies"

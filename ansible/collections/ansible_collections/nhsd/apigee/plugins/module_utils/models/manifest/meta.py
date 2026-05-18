@@ -9,7 +9,6 @@ SCHEMA_VERSION = "1.1.8"
 _REGISTRY_DATA = {}
 
 
-
 class ManifestMetaApi(pydantic.BaseModel):
     name: pydantic.constr(regex=r"^[a-z][a-z0-9]*(-[a-z0-9]+)*$")
     id: typing.Optional[pydantic.UUID4] = pydantic.Field(
@@ -29,7 +28,7 @@ class ManifestMetaApi(pydantic.BaseModel):
             {
                 "guid": str(native["guid"]),
                 "spec_guids": [str(guid) for guid in spec_guids],
-             }
+            }
         )
         return native
 
@@ -58,7 +57,9 @@ class ManifestMetaApi(pydantic.BaseModel):
             guid = _REGISTRY_DATA[name]["guid"]
         registered_guid = _REGISTRY_DATA[name]["guid"]
         if str(guid) != registered_guid:
-            raise ValueError(f"Supplied guid {guid} does not match registered guid {registered_guid}")
+            raise ValueError(
+                f"Supplied guid {guid} does not match registered guid {registered_guid}"
+            )
         return guid
 
     @pydantic.validator("spec_guids")
@@ -78,9 +79,10 @@ class ManifestMetaApi(pydantic.BaseModel):
             if str(spec_guid) not in registered_spec_guids:
                 invalid.append(str(spec_guid))
         if len(invalid) > 0:
-            raise ValueError(f"Supplied spec_guids {invalid} do not match registered spec_guids {registered_spec_guids}")
+            raise ValueError(
+                f"Supplied spec_guids {invalid} do not match registered spec_guids {registered_spec_guids}"
+            )
         return spec_guids
-
 
 
 class ManifestMeta(pydantic.BaseModel):
@@ -91,7 +93,7 @@ class ManifestMeta(pydantic.BaseModel):
     def validate_schema_version(cls, schema_version):
         semantic_parts = schema_version.split(".")
 
-        MAJOR, MINOR, PATCH = [int(x) for x in SCHEMA_VERSION.split(".")]
+        MAJOR, _, _ = [int(x) for x in SCHEMA_VERSION.split(".")]
         major = int(semantic_parts[0])
 
         # Checking against minor/patch would not allow to us deploy

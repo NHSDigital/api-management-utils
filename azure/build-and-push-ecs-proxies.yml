@@ -1,17 +1,21 @@
 parameters:
-  - name: 'container_vars'
+  - name: "container_vars"
     type: string
-    default: 'ecs-proxies-containers.yml'
-  - name: 'env_vars_dir'
+    default: "ecs-proxies-containers.yml"
+  - name: "env_vars_dir"
     type: string
-    default: './'
-  - name: 'utils_dir'
+    default: "./"
+  - name: "utils_dir"
     type: string
-    default: 'utils'
+    default: "utils"
 
 steps:
   - bash: |
-      source "${{ parameters.env_vars_dir }}/.build_env_vars"
-      CONTAINER_VARS_FILE="$(realpath ${{ parameters.container_vars }})" \
-      make --no-print-directory -C ${{ parameters.utils_dir }}/ansible build-ecs-proxies
+      source "$env_vars_dir/.build_env_vars"
+      CONTAINER_VARS_FILE="$(realpath "$container_vars")" \
+      make --no-print-directory -C "$utils_dir/ansible" build-ecs-proxies
+    env:
+      env_vars_dir: ${{ parameters.env_vars_dir }}
+      container_vars: ${{ parameters.container_vars }}
+      utils_dir: ${{ parameters.utils_dir }}
     displayName: "Build and push ECS proxies"

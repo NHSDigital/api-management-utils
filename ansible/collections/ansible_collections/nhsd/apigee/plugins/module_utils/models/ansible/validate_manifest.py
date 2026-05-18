@@ -53,14 +53,14 @@ class ValidateManifest(pydantic.BaseModel):
     def prepend_dist_dir_to_spec_paths(cls, manifest, values):
         dist_dir = values.get("dist_dir")
         print(dist_dir)
-        if not dist_dir:
-            return manifest
-        apigee = manifest["apigee"]
-        for env_dict in apigee["environments"]:
-            for spec_dict in env_dict["specs"]:
-                path = spec_dict.get("path")
-                if path is not None:
-                    spec_dict["path"] = os.path.join(dist_dir, path)
+        if dist_dir:
+            apigee = manifest["apigee"]
+            for env_dict in apigee["environments"]:
+                for spec_dict in env_dict["specs"]:
+                    path = spec_dict.get("path")
+                    if path is not None:
+                        spec_dict["path"] = os.path.join(dist_dir, path)
+
         return manifest
 
     @pydantic.validator("manifest")

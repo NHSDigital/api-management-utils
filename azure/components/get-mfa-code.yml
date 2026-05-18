@@ -3,11 +3,13 @@ parameters:
     type: string
 
 steps:
-- bash: |
-    # Install requirements
-    set -e
-    
-    # Save code to variable
-    export MFA_CODE=`oathtool --totp -b '${{ parameters.apigee_otp_key }}'`
-    echo "##vso[task.setvariable variable=secret.MFACode;issecret=true]$MFA_CODE"
-  displayName: 'Get MFA Code for Apigee Login'
+  - bash: |
+      # Install requirements
+      set -e
+
+      # Save code to variable
+      export MFA_CODE=`oathtool --totp -b "$apigee_otp_key"`
+      echo "##vso[task.setvariable variable=secret.MFACode;issecret=true]$MFA_CODE"
+    env:
+      apigee_otp_key: ${{ parameters.apigee_otp_key }}
+    displayName: "Get MFA Code for Apigee Login"

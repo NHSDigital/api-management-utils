@@ -19,12 +19,12 @@ Options:
   --min-age=<min_age>            (NOT IMPLEMENTED) Minimum age in seconds
   --respect-prs                  Don't undeploy if there's a PR open for it
 """
+
 import re
 import requests
 from typing import Optional, Set
 from docopt import docopt
 from apigee_client import ApigeeClient
-
 
 SPEC_MATCHER = re.compile("(personal-demographics|identity-service|hello-world)-.+")
 PROXY_MATCHER = re.compile(
@@ -49,7 +49,7 @@ def canonicalize(name: str) -> str:
 
 class GithubClient:
     def get_open_prs(self, env: str) -> Set[str]:
-        """ Returns names of open pull requests """
+        """Returns names of open pull requests"""
         canonical_prs = set()
         for repo_name in REPO_NAMES.keys():
             prs = requests.get(
@@ -65,7 +65,7 @@ class GithubClient:
         return canonical_prs
 
 
-def clean_specs(client: ApigeeClient, env: str, dry_run: bool = False):
+def clean_specs(client: ApigeeClient, dry_run: bool = False):
     specs = client.list_specs()
     spec_names = [spec["name"] for spec in specs["contents"]]
 
@@ -85,10 +85,10 @@ def clean_proxies(
     env: str,
     dry_run: bool = False,
     sandboxes_only: bool = False,
-    min_age: Optional[int] = None,
     undeploy_only: bool = False,
     respect_prs: bool = False,
 ):
+
     open_prs = set()
     if respect_prs:
         # Get open PRs, if there are any
@@ -135,7 +135,7 @@ def clean_proxies(
                 client.delete_proxy(proxy)
 
 
-def clean_products(client: ApigeeClient, env: str, dry_run: bool = False):
+def clean_products(client: ApigeeClient, dry_run: bool = False):
     products = client.list_products()
     pr_products = [product for product in products if PRODUCT_MATCHER.match(product)]
 
@@ -154,12 +154,11 @@ def clean_env(
     should_clean_products: bool = False,
     sandboxes_only: bool = False,
     dry_run: bool = False,
-    min_age: Optional[int] = None,
     undeploy_only: bool = False,
     respect_prs: bool = False,
 ):
     if should_clean_specs:
-        clean_specs(client, env, dry_run)
+        clean_specs(client, dry_run)
 
     if should_clean_proxies:
         clean_proxies(
@@ -168,13 +167,12 @@ def clean_env(
             env,
             dry_run,
             sandboxes_only,
-            min_age,
             undeploy_only,
             respect_prs,
         )
 
     if should_clean_products:
-        clean_products(client, env, dry_run)
+        clean_products(client, dry_run)
 
 
 if __name__ == "__main__":
@@ -190,7 +188,6 @@ if __name__ == "__main__":
         should_clean_products=args["--products"],
         sandboxes_only=args["--sandbox-only"],
         dry_run=args["--dry-run"],
-        min_age=args["--min-age"],
         undeploy_only=args["--undeploy-only"],
         respect_prs=args["--respect-prs"],
     )

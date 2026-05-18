@@ -30,7 +30,7 @@ def _make_product_dict(name, environment="internal-dev", approval_type="auto"):
 
 
 @pytest.mark.parametrize(
-    "env,initial_approvalType,final_approvalType",
+    "env,initial_approvaltype,final_approvaltype",
     [
         ("prod", "auto", "manual"),
         ("prod", "manual", "manual"),
@@ -38,18 +38,18 @@ def _make_product_dict(name, environment="internal-dev", approval_type="auto"):
         ("int", "manual", "manual"),
     ],
 )
-def test_prod_cannot_have_auto_approvalType_on_products(
-    env, initial_approvalType, final_approvalType
+def test_prod_cannot_have_auto_approvaltype_on_products(
+    env, initial_approvaltype, final_approvaltype
 ):
     product_dict = _make_product_dict(
-        "test-service", environment=env, approval_type=initial_approvalType
+        "test-service", environment=env, approval_type=initial_approvaltype
     )
     product = ApigeeProduct(**product_dict)
-    assert product.approvalType == final_approvalType
+    assert product.approvalType == final_approvaltype
 
 
 @pytest.mark.parametrize(
-    "name,env,initial_approvalType,final_approvalType",
+    "name,env,initial_approvaltype,final_approvaltype",
     [
         ("canary-api", "prod", "auto", "auto"),
         ("canary-api", "prod", "manual", "manual"),
@@ -58,13 +58,13 @@ def test_prod_cannot_have_auto_approvalType_on_products(
     ],
 )
 def test_manual_approval_exception_list_on_prod(
-    name, env, initial_approvalType, final_approvalType
+    name, env, initial_approvaltype, final_approvaltype
 ):
     product_dict = _make_product_dict(
-        name, environment=env, approval_type=initial_approvalType
+        name, environment=env, approval_type=initial_approvaltype
     )
     product = ApigeeProduct(**product_dict)
-    assert product.approvalType == final_approvalType
+    assert product.approvalType == final_approvaltype
 
 
 def test_ratelimiting_product_attribute_initialized_with_dict_or_string():
@@ -75,15 +75,13 @@ def test_ratelimiting_product_attribute_initialized_with_dict_or_string():
         "spikeArrest": {"ratelimit": "30000pm"},  # 5000 tps
     }
     attr_dict = {product_dict["name"]: ratelimiting_dict}
-    
+
     # Init with dict-like
-    product_dict["attributes"].append(
-        {"name": "ratelimiting", "value": attr_dict}
-    )
+    product_dict["attributes"].append({"name": "ratelimiting", "value": attr_dict})
     product1 = ApigeeProduct(**product_dict)
 
     # Assert ratelimiting attribute gets serialized to a string
-    assert type(product1.attributes[-1].value) == str
+    assert isinstance(product1.attributes[-1].value, str)
 
     # Init with attribute values already a string
     attr_str = json.dumps(attr_dict)
