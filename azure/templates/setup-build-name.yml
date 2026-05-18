@@ -8,11 +8,15 @@ steps:
       if [ -n "$(System.PullRequest.SourceBranch)" ]; then
         export SOURCE_BRANCH="$(System.PullRequest.SourceBranch)"
       else
-        export SOURCE_BRANCH=`echo $(SERVICE_ARTIFACT_NAME) | cut -d'+' -f1 | sed -e "s/${{ parameters.service_name }}-//"`
+        export SOURCE_BRANCH=`echo $(SERVICE_ARTIFACT_NAME) | cut -d'+' -f1 | sed -e "s/$service_name-//"`
       fi
       echo "##vso[task.setvariable variable=BRANCH_NAME]`echo $SOURCE_BRANCH | sed -r 's/[/|\\@":<>?*]+/-/g'`"
+    env:
+      service_name: ${{ parameters.service_name }}
     displayName: Set and replace invalid characters in branch name
 
-  - bash: 'echo "##vso[build.updatebuildnumber]${{ parameters.service_name }}-$(BRANCH_NAME)+$(Build.BuildID)"'
+  - bash: 'echo "##vso[build.updatebuildnumber]$service_name-$(BRANCH_NAME)+$(Build.BuildID)"'
     condition: eq(variables['Build.SourceBranchName'], 'merge')
     displayName: Update build ID if this is a pull request
+    env:
+      service_name: ${{ parameters.service_name }}

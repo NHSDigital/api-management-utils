@@ -46,14 +46,14 @@ def main(min_age_hr, key_prefix, table_name, profile):
 
     filter_expr = "begins_with(#n0, :v0) AND attribute_exists(#n1)"
 
-    ExpressionAttributeNames = {"#n0": "LockID", "#n1": "Info"}
-    ExpressionAttributeValues = {
+    expression_attribute_names = {"#n0": "LockID", "#n1": "Info"}
+    expression_attribute_values = {
         ":v0": key_prefix,
     }
     items = terraform_lock_table.scan(
         FilterExpression=filter_expr,
-        ExpressionAttributeNames=ExpressionAttributeNames,
-        ExpressionAttributeValues=ExpressionAttributeValues,
+        ExpressionAttributeNames=expression_attribute_names,
+        ExpressionAttributeValues=expression_attribute_values,
     )
 
     total_items = items["Items"]
@@ -61,8 +61,8 @@ def main(min_age_hr, key_prefix, table_name, profile):
     while "LastEvaluatedKey" in items:
         items = terraform_lock_table.scan(
             FilterExpression=filter_expr,
-            ExpressionAttributeNames=ExpressionAttributeNames,
-            ExpressionAttributeValues=ExpressionAttributeValues,
+            ExpressionAttributeNames=expression_attribute_names,
+            ExpressionAttributeValues=expression_attribute_values,
             ExclusiveStartKey=items["LastEvaluatedKey"],
         )
         total_items.extend(items["Items"])

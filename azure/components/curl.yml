@@ -5,14 +5,18 @@ parameters:
       - GET
   - name: url
   - name: headers
-    default: ''
+    default: ""
   - name: body
-    default: ''
+    default: ""
   - name: display_name
-    default: ''
-
+    default: ""
 
 steps:
   - bash: |
-      curl --fail -X '${{ parameters.method }}' -H '${{ parameters.headers }}' -d '${{ parameters.body }}' '${{ parameters.url }}'
+      curl --fail -X "$method" -H "$headers" -d "$body" "$url"
+    env:
+      method: ${{ parameters.method }}
+      url: ${{ parameters.url }}
+      headers: ${{ parameters.headers }}
+      body: ${{ parameters.body }}
     displayName: ${{ coalesce(parameters.display_name, 'curl') }}

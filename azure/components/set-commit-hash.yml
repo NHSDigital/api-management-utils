@@ -1,4 +1,6 @@
 steps:
   - bash: |
-      echo "##vso[task.setvariable variable=COMMIT_HASH]`echo $(Build.SourceVersionMessage) | cut -d' ' -f2`"
+      echo "##vso[task.setvariable variable=COMMIT_HASH]$(echo "$BUILD_SOURCEVERSIONMESSAGE" | cut -d' ' -f2)"
+    env:
+      BUILD_SOURCEVERSIONMESSAGE: $(Build.SourceVersionMessage)
     displayName: Set COMMIT_HASH

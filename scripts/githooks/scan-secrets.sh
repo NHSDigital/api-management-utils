@@ -34,6 +34,7 @@ function main() {
     dir="/workdir"
     cmd="$(get-cmd-to-run)" run-gitleaks-in-docker
   fi
+  return 0
 }
 
 # Get Gitleaks command to execute and configuration.
@@ -52,15 +53,20 @@ function get-cmd-to-run() {
     "staged-changes")
       cmd="protect --source $dir --verbose --staged"
       ;;
+    *)
+      echo "ERROR: Unknown check type: $check" >&2
+      return 1
+      ;;
   esac
   # Include base line file if it exists
-  if [ -f "$dir/scripts/config/.gitleaks-baseline.json" ]; then
+  if [[ -f "$dir/scripts/config/.gitleaks-baseline.json" ]]; then
     cmd="$cmd --baseline-path $dir/scripts/config/.gitleaks-baseline.json"
   fi
   # Include the config file
   cmd="$cmd --config $dir/scripts/config/gitleaks.toml"
 
   echo "$cmd"
+  return 0
 }
 
 # Run Gitleaks natively.
@@ -70,6 +76,7 @@ function run-gitleaks-natively() {
 
   # shellcheck disable=SC2086
   gitleaks $cmd
+  return 0
 }
 
 # Run Gitleaks in a Docker container.
@@ -89,13 +96,15 @@ function run-gitleaks-in-docker() {
     --workdir $dir \
     "$image" \
       $cmd
+  return 0
 }
 
 # ==============================================================================
 
 function is-arg-true() {
+  local arg="$1"
 
-  if [[ "$1" =~ ^(true|yes|y|on|1|TRUE|YES|Y|ON)$ ]]; then
+  if [[ "$arg" =~ ^(true|yes|y|on|1|TRUE|YES|Y|ON)$ ]]; then
     return 0
   else
     return 1

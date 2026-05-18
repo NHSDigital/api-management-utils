@@ -18,25 +18,27 @@ Options:
   -t <token> | --token=<token>                  Auth token (get_token)
   -c --check                                    Will show the data due to be deleted
 """
+
 import json
 import requests
 from docopt import docopt
 
+
 def find_offending_entires(json_data, offending_str):
-	if check_mode:
-		print("***************************  Check mode  *****************************")
-		print("* The following items would be deleted when run outside of check mode *")
-	for api in json_data:
-		for env in json_data[api]:
-				to_keep = []
-				for line in json_data[api][env]:
-						if offending_str not in line:
-								to_keep.append(line)
-						else:
-								if check_mode:						
-										print(" -", line)				
-				json_data[api][env] = to_keep
-	return json_data
+    if check_mode:
+        print("***************************  Check mode  *****************************")
+        print("* The following items would be deleted when run outside of check mode *")
+    for api in json_data:
+        for env in json_data[api]:
+            to_keep = []
+            for line in json_data[api][env]:
+                if offending_str not in line:
+                    to_keep.append(line)
+                elif check_mode:
+                    print(" -", line)
+            json_data[api][env] = to_keep
+    return json_data
+
 
 def post_new_data(new_json_data):
     url = f"https://api.enterprise.apigee.com/v1/organizations/{org_name}/environments/{env_name}/keyvaluemaps/{map_name}/entries/{entry_name}"
@@ -46,7 +48,8 @@ def post_new_data(new_json_data):
     post_new_json_data = requests.post(url, json=format_new_json, headers=auth)
 
     print(post_new_json_data.text)
-            
+
+
 def main(args):
     global map_name, entry_name, token, check_mode
     input_value = str(args["--value"])
@@ -63,12 +66,13 @@ def main(args):
     url = f"https://api.enterprise.apigee.com/v1/organizations/{org_name}/environments/{env_name}/keyvaluemaps/{map_name}/entries/{entry_name}"
     resp = requests.get(url, headers=auth)
 
-    json_data = json.loads(json.loads(resp.text).get('value'))
+    json_data = json.loads(json.loads(resp.text).get("value"))
 
     new_json_data = find_offending_entires(json_data, input_value)
 
     if not check_mode:
-      post_new_data(new_json_data)
+        post_new_data(new_json_data)
+
 
 if __name__ == "__main__":
-     main(docopt(__doc__, version="1"))
+    main(docopt(__doc__, version="1"))

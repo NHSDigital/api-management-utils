@@ -8,10 +8,11 @@ import colorama
 import typing
 
 from ansible_collections.nhsd.apigee.plugins.module_utils.models.manifest import meta
-from ansible_collections.nhsd.apigee.plugins.module_utils.models.manifest.manifest import Manifest
+from ansible_collections.nhsd.apigee.plugins.module_utils.models.manifest.manifest import (
+    Manifest,
+)
 
-
-SCHEMA_VERSION_REGEX = re.compile(r"^([1-9][0-9]*)\.([0-9]+)\.([0-9]+)$")
+SCHEMA_VERSION_REGEX = re.compile(r"^([1-9]\d*)\.(\d+)\.(\d+)$")
 
 
 class SchemaString:
@@ -23,7 +24,9 @@ class SchemaString:
             match = re.match(SCHEMA_VERSION_REGEX, schema_version)
             if not match:
                 raise ValueError(f"Invalid SchemaString {schema_version}")
-            self.major, self.minor, self.patch = [int(match.group(x)) for x in range(1, 4)]
+            self.major, self.minor, self.patch = [
+                int(match.group(x)) for x in range(1, 4)
+            ]
         elif isinstance(schema_or_major, int):
             if not isinstance(minor, int) and isinstance(patch, int):
                 raise ValueError("SchemaString.__init__ requires major, minor, patch")
@@ -47,41 +50,51 @@ class SchemaString:
         return (
             self.major < other.major
             or (self.major == other.major and self.minor < other.minor)
-            or (self.major == other.major and self.minor == other.minor and self.patch < other.patch)
+            or (
+                self.major == other.major
+                and self.minor == other.minor
+                and self.patch < other.patch
+            )
         )
 
     def __le__(self, other):
         return self < other or self == other
 
     def __gt__(self, other):
-        return not self <= other
+        return (self.major, self.minor, self.patch) > (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
     def __ge__(self, other):
-        return not self < other
+        return (self.major, self.minor, self.patch) >= (
+            other.major,
+            other.minor,
+            other.patch,
+        )
 
     def valid_increments(self):
         return [
             SchemaString(self.major + 1, 0, 0),
             SchemaString(self.major, self.minor + 1, 0),
-            SchemaString(self.major, self.minor, self.patch + 1)
+            SchemaString(self.major, self.minor, self.patch + 1),
         ]
 
 
 def main():
-    """
-
-    """
+    """ """
     UPDATED_SCHEMA_VERSION = SchemaString(meta.SCHEMA_VERSION)
 
     script_dir = pathlib.Path(__file__).parent
-    relative_schema_dir = script_dir.joinpath(f"../tests/unit/plugins/module_utils/models/manifest/schema_versions/")
-
-    # last_schema_file_name = pathlib.Path(f"v{}.json")
+    relative_schema_dir = script_dir.joinpath(
+        "../tests/unit/plugins/module_utils/models/manifest/schema_versions/"
+    )
 
     schema_dir_glob = relative_schema_dir.glob("v*.json")
 
     SCHEMA_VERSION = SchemaString("1.0.0")
-    SCHEMA_FILE_NAME_PATTERN = re.compile(r"v([1-9][0-9]*\.[0-9]+\.[0-9]+)\.json$")
+    SCHEMA_FILE_NAME_PATTERN = re.compile(r"v([1-9]\d*\.\d+\.\d+)\.json$")
     for schema_file in schema_dir_glob:
         match = re.match(SCHEMA_FILE_NAME_PATTERN, schema_file.name)
         schema_version = SchemaString(match.group(1))
@@ -100,17 +113,22 @@ def main():
         fromfile=str(SCHEMA_VERSION),
         tofile=str(UPDATED_SCHEMA_VERSION),
     )
-    deltas = [delta for delta in deltas]
+    deltas = list(deltas)
 
     if not deltas:
-        raise ValueError(f"No difference between proposed {UPDATED_SCHEMA_VERSION} schema and current {meta.SCHEMA_VERSION}")
+        raise ValueError(
+            f"No difference between proposed {UPDATED_SCHEMA_VERSION} schema and current {meta.SCHEMA_VERSION}"
+        )
 
     if UPDATED_SCHEMA_VERSION not in SCHEMA_VERSION.valid_increments():
-        raise ValueError(f"""{UPDATED_SCHEMA_VERSION} is invalid increment after current {SCHEMA_VERSION}.
+        raise ValueError(
+            f"""{UPDATED_SCHEMA_VERSION} is invalid increment after current {SCHEMA_VERSION}.
 Please increment major, minor or patch integer, e.g:
-""" + f"\n".join(str(x) for x in SCHEMA_VERSION.valid_increments()))
+"""
+            + "\n".join(str(x) for x in SCHEMA_VERSION.valid_increments())
+        )
 
-    print("-"*50)
+    print("-" * 50)
     for delta in deltas:
         if delta.startswith("+"):
             col = colorama.Fore.GREEN
@@ -122,7 +140,7 @@ Please increment major, minor or patch integer, e.g:
         print(colorama.Fore.RESET)
 
     _input = None
-    print("-"*50)
+    print("-" * 50)
     print("Confirm spec changes? ", end="")
     while _input not in ["y", "n"]:
         if _input is not None:
@@ -139,8 +157,7 @@ Please increment major, minor or patch integer, e.g:
 
     with open(new_schema_file, "w") as f:
         f.write(new_schema)
-    print(
-        f"""Wrote {new_schema_file}"
+    print(f"""Wrote {new_schema_file}"
 Validate this file by executing
 $ make test
 in {script_dir.parent}""")
