@@ -5,14 +5,15 @@ parameters:
 
 steps:
   - bash: |
-      if [ -n "$(System.PullRequest.SourceBranch)" ]; then
-        export SOURCE_BRANCH="$(System.PullRequest.SourceBranch)"
+      if [ -n "$system_pull_request_source_branch" ]; then
+        export SOURCE_BRANCH="$system_pull_request_source_branch"
       else
         export SOURCE_BRANCH=`echo $(SERVICE_ARTIFACT_NAME) | cut -d'+' -f1 | sed -e "s/$service_name-//"`
       fi
       echo "##vso[task.setvariable variable=BRANCH_NAME]`echo $SOURCE_BRANCH | sed -r 's/[/|\\@":<>?*]+/-/g'`"
     env:
       service_name: ${{ parameters.service_name }}
+      system_pull_request_source_branch: $(System.PullRequest.SourceBranch)
     displayName: Set and replace invalid characters in branch name
 
   - bash: 'echo "##vso[build.updatebuildnumber]$service_name-$(BRANCH_NAME)+$(Build.BuildID)"'
