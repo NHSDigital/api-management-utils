@@ -19,8 +19,8 @@ steps:
     displayName: get role name
 
   - bash: |
-      echo "[DEBUG] BUILD_ROLE value: $(BUILD_ROLE)"
-    displayName: "Debug BUILD_ROLE value"
+      echo "[DEBUG] ROLE value: $(ROLE)"
+    displayName: "Debug ROLE value"
 
   - bash: |
       set -e
