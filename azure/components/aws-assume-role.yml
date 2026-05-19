@@ -19,8 +19,12 @@ steps:
     displayName: get role name
 
   - bash: |
-      echo "[DEBUG] ROLE value: $(ROLE)"
-    displayName: "Debug ROLE value"
+      if [ -z "$(ROLE)" ]; then
+        echo "[DEBUG] ROLE is empty"
+      else
+        echo "[DEBUG] ROLE value: $(ROLE)"
+      fi
+    displayName: "Debug ROLE value (empty or not)"
 
   - bash: |
       set -e
