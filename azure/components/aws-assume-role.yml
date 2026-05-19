@@ -93,4 +93,4 @@ steps:
       AWS_ACCOUNT: ${{ parameters.aws_account }}
       PROFILE: ${{ parameters.profile }}
     displayName: assume role
-    condition: and(succeeded(), ne(variables['ROLE'], ''))
+    condition: and(succeeded(), ne(variables['ROLE'], ''), ne(variables['ROLE'], null))
