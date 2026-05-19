@@ -225,9 +225,11 @@ jobs:
           export build_label="$(Build.BuildId)-sha${commit_hash}"
           export pr_number="$(PR_NUMBER)"
           export service_name="$(service_name)"
-          export service_id="$(service_short_name)"
+          export service_id="$short_service_name"
           export ANSIBLE_FORCE_COLOR=yes
           make --no-print-directory -C "$(service_name)/utils/ansible" create-build-env-vars
+        env:
+          short_service_name: ${{ parameters.short_service_name }}
         displayName: output build env vars for artifact
         condition: and(succeeded(), eq(variables['build_containers'], 'true'))
 
