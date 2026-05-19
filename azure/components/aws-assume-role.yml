@@ -19,6 +19,10 @@ steps:
     displayName: get role name
 
   - bash: |
+      echo "[DEBUG] BUILD_ROLE value: $(BUILD_ROLE)"
+    displayName: "Debug BUILD_ROLE value"
+
+  - bash: |
       set -e
 
       aws_role="$(ROLE)"
