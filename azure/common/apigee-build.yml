@@ -245,6 +245,11 @@ jobs:
         displayName: "ensure build role"
         condition: and(succeeded(), eq(variables['build_containers'], 'true'))
 
+      - bash: |
+          echo "[DEBUG] BUILD_ROLE value: $(BUILD_ROLE)"
+        displayName: "Debug BUILD_ROLE value"
+        condition: and(succeeded(), eq(variables['build_containers'], 'true'))
+
       - template: ../components/aws-assume-role.yml
         parameters:
           role: "$(BUILD_ROLE)"
