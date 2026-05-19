@@ -247,8 +247,8 @@ jobs:
 
       - template: ../components/aws-assume-role.yml
         parameters:
-          role: $(BUILD_ROLE)
-          profile: $(BUILD_ROLE)
+          role: "$(BUILD_ROLE)"
+          profile: "$(BUILD_ROLE)"
 
       - bash: |
           source "$(service_name)/dist/.build_env_vars"
