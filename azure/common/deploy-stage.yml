@@ -163,11 +163,11 @@ stages:
                       fi
                     displayName: Set NOTIFY_COMMIT_SHA
 
-                  - template: '../components/update-github-status.yml'
-                    parameters:
-                      state: pending
-                      description: "Deploy to ${{ parameters.environment }} started"
-                      environment: ${{ parameters.environment }}
+                  # - template: '../components/update-github-status.yml'
+                  #   parameters:
+                  #     state: pending
+                  #     description: "Deploy to ${{ parameters.environment }} started"
+                  #     environment: ${{ parameters.environment }}
 
                 - ${{ each param in parameters }}:
                   - ${{ if not(containsValue(parameters._expose_blacklist, param.key)) }}:
@@ -271,17 +271,17 @@ stages:
                     pr_label: $(PR_LABEL)
                     aws_account: ${{ parameters.aws_account }}
 
-                - ${{ if parameters.notify }}:
-                  - template: '../components/update-github-status.yml'
-                    parameters:
-                      state: success
-                      on_success: true
-                      description: "Deploy to ${{ parameters.environment }} succeeded"
-                      environment: ${{ parameters.environment }}
+                # - ${{ if parameters.notify }}:
+                #   - template: '../components/update-github-status.yml'
+                #     parameters:
+                #       state: success
+                #       on_success: true
+                #       description: "Deploy to ${{ parameters.environment }} succeeded"
+                #       environment: ${{ parameters.environment }}
 
-                  - template: '../components/update-github-status.yml'
-                    parameters:
-                      state: failure
-                      on_failure: true
-                      description: "Deploy to ${{ parameters.environment }} failed"
-                      environment: ${{ parameters.environment }}
+                #   - template: '../components/update-github-status.yml'
+                #     parameters:
+                #       state: failure
+                #       on_failure: true
+                #       description: "Deploy to ${{ parameters.environment }} failed"
+                #       environment: ${{ parameters.environment }}
