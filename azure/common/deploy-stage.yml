@@ -98,14 +98,6 @@ stages:
                     fi
                   displayName: "check workspace is clean"
 
-                - bash: |
-                    if [[ -n "$(System.PullRequest.SourceBranch)" ]]; then
-                      echo "##vso[task.setvariable variable=RESOLVED_ARTIFACT_BRANCH]$(System.PullRequest.SourceBranch)"
-                    else
-                      echo "##vso[task.setvariable variable=RESOLVED_ARTIFACT_BRANCH]$(Build.SourceBranch)"
-                    fi
-                  displayName: "Resolve artifact branch"
-
                 - task: DownloadPipelineArtifact@2
                   inputs:
                     source: "specific"
@@ -113,7 +105,7 @@ stages:
                     pipeline: $(resources.pipeline.build_pipeline.pipelineID)
                     preferTriggeringPipeline: true
                     runVersion: "latestFromBranch"
-                    runBranch: "$(RESOLVED_ARTIFACT_BRANCH)"
+                    runBranch: $(Build.SourceBranch)
                     path: "$(Pipeline.Workspace)/s/${{ parameters.service_name }}"
 
                 - bash: |
