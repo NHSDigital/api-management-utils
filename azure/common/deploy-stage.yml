@@ -209,6 +209,7 @@ stages:
                         state: pending
                         description: "Deploy to ${{ parameters.environment }} started"
                         environment: ${{ parameters.environment }}
+                        stage_name: ${{ parameters.stage_name }}
 
                 - ${{ each param in parameters }}:
                     - ${{ if not(containsValue(parameters._expose_blacklist, param.key)) }}:
@@ -319,6 +320,7 @@ stages:
                         on_success: true
                         description: "Deploy to ${{ parameters.environment }} succeeded"
                         environment: ${{ parameters.environment }}
+                        stage_name: ${{ parameters.stage_name }}
 
                     - template: "../components/update-github-status.yml"
                       parameters:
@@ -326,3 +328,4 @@ stages:
                         on_failure: true
                         description: "Deploy to ${{ parameters.environment }} failed"
                         environment: ${{ parameters.environment }}
+                        stage_name: ${{ parameters.stage_name }}

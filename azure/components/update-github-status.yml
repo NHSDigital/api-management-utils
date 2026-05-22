@@ -14,6 +14,10 @@ parameters:
     displayName: Apigee environment deploying against
     type: string
     default: ""
+  - name: stage_name
+    displayName: Azure stage name for unique status context
+    type: string
+    default: ""
   # Been through a lot of pain to try to get these next two to work. Unfortunately due to how templates
   # are expanded, flagging like this is the only way I could find to get it to evaluate properly
   - name: on_success
@@ -36,12 +40,17 @@ steps:
       BUILD_RESULTS_URL="$(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=results"
 
       if [[ "$(NOTIFY_COMMIT_SHA)" =~ ^[0-9a-f]+$ ]]; then
+        context_suffix="${environment}"
+        if [[ -n "${stage_name}" ]]; then
+          context_suffix="${environment}/${stage_name}"
+        fi
+
         echo "Reporting state ${{ parameters.state }} to ${NOTIFY_GITHUB_REPOSITORY}"
         echo "##[debug] Hitting https://api.github.com/repos/${NOTIFY_GITHUB_REPOSITORY}/statuses/$(NOTIFY_COMMIT_SHA)"
 
         payload=$(jq -nc \
           --arg state "${{ parameters.state }}" \
-          --arg context "$(Build.DefinitionName) ${environment}" \
+          --arg context "$(Build.DefinitionName) ${context_suffix}" \
           --arg description "${description}" \
           --arg target_url "${BUILD_RESULTS_URL}" \
           '{state: $state, context: $context, description: $description, target_url: $target_url}')
@@ -58,6 +67,7 @@ steps:
     env:
       description: ${{ parameters.description }}
       environment: ${{ parameters.environment }}
+      stage_name: ${{ parameters.stage_name }}
     displayName: "Notify GitHub: ${{ parameters.state }}"
     condition: |
       or(
