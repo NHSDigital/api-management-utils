@@ -71,14 +71,6 @@ steps:
       apigee_environment: ${{ parameters.apigee_environment }}
     displayName: "Check for ECS proxy definitions"
 
-  - task: s3-cache-action@1.3.4
-    inputs:
-      key: poetry | utils | $(UTILS_DIR)/poetry.lock
-      location: "$(UTILS_DIR)/.venv"
-      debug: true
-      alias: "UtilsPreReq"
-    displayName: cache utils pre-requisites
-
   - bash: |
       n=0
       until [ "$n" -ge 3 ]
@@ -87,7 +79,6 @@ steps:
         n=$((n+1))
       done
     workingDirectory: "$(UTILS_DIR)"
-    condition: ne(variables['CacheRestored-UtilsPreReq'], 'true')
     displayName: "Install utils pre-requisites"
 
   - bash: |

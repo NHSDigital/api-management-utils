@@ -42,18 +42,9 @@ jobs:
           tfenv use 0.14.6
         displayName: setup terraform
 
-      - task: s3-cache-action@1.3.4
-        inputs:
-          key: poetry | utils | poetry.lock
-          location: ".venv"
-          debug: true
-          alias: "Utils"
-        displayName: cache utils pre-requisites
-
       - bash: |
           make install
         displayName: install dependencies
-        condition: ne(variables['CacheRestored-Utils'], 'true')
 
       - template: ./components/get-aws-secrets-and-ssm-params.yml
         parameters:
