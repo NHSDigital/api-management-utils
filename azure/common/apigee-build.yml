@@ -163,9 +163,6 @@ jobs:
         inputs:
           versionSpec: "$(PY_VER)"
 
-      - ${{ each cache_step in parameters.cache_steps }}:
-          - ${{ cache_step }}
-
       - bash: |
           n=0
           until [ "$n" -ge 3 ]
@@ -203,19 +200,10 @@ jobs:
       - checkout: common
         path: "s/${{ parameters.service_name }}/utils"
 
-      - task: s3-cache-action@1.3.4
-        inputs:
-          key: poetry | $(System.DefaultWorkingDirectory) | ${{ parameters.service_name }}/utils/poetry.lock
-          location: "${{ parameters.service_name }}/utils/.venv"
-          debug: true
-          alias: "Utils"
-        displayName: cache utils dependencies
-
       - bash: |
           make install
           sleep 5
         workingDirectory: "${{ parameters.service_name }}/utils"
-        condition: ne(variables['CacheRestored-Utils'], 'true')
         displayName: "Install utils "
 
       - bash: |
