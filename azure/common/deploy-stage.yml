@@ -167,11 +167,40 @@ stages:
 
                 - ${{ if parameters.notify }}:
                     - bash: |
-                        if [[ -z $(NOTIFY_COMMIT_SHA) ]]; then
-                            export NOTIFY_COMMIT_SHA=`echo "$(Build.SourceVersionMessage)" | cut -d' ' -f2`
-                            echo "##vso[task.setvariable variable=NOTIFY_COMMIT_SHA]$NOTIFY_COMMIT_SHA"
+                        echo "Build.SourceBranch: $(Build.SourceBranch)"
+                        echo "Build.SourceVersion: $(Build.SourceVersion)"
+                        echo "Build.SourceVersionMessage: $(Build.SourceVersionMessage)"
+                        echo "System.PullRequest.SourceCommitId: $(System.PullRequest.SourceCommitId)"
+
+                        if [[ ! -z "$(NOTIFY_COMMIT_SHA)" ]]; then
+                          echo "##[debug]Using already provided NOTIFY_COMMIT_SHA=$(NOTIFY_COMMIT_SHA)"
                         else
-                            echo "##[debug]Using already provided NOTIFY_COMMIT_SHA=$(NOTIFY_COMMIT_SHA)"
+                          NOTIFY_COMMIT_SHA=""
+
+                          if [[ "$(Build.SourceBranch)" =~ ^refs/pull/.+$ ]]; then
+                            if [[ ! -z "$(System.PullRequest.SourceCommitId)" ]]; then
+                              echo "##[debug]Build appears to be a pull request build"
+                              echo "##[debug]Using System.PullRequest.SourceCommitId as NOTIFY_COMMIT_SHA"
+                              NOTIFY_COMMIT_SHA="$(System.PullRequest.SourceCommitId)"
+                            else
+                              echo "##[debug]Build appears to be a pull request build"
+                              echo "##[debug]Extracting NOTIFY_COMMIT_SHA from Build.SourceVersionMessage"
+                              NOTIFY_COMMIT_SHA=$(echo "$(Build.SourceVersionMessage)" | cut -d' ' -f2)
+                            fi
+                          fi
+
+                          if [[ "$(Build.SourceBranch)" =~ ^refs/tags/.+$ ]] && [[ -z "$NOTIFY_COMMIT_SHA" ]]; then
+                            echo "##[debug]Build appears to be a tag build"
+                            echo "##[debug]Using Build.SourceVersion as NOTIFY_COMMIT_SHA"
+                            NOTIFY_COMMIT_SHA="$(Build.SourceVersion)"
+                          fi
+
+                          if [[ -z "$NOTIFY_COMMIT_SHA" ]]; then
+                            echo "##[debug]Using Build.SourceVersion as NOTIFY_COMMIT_SHA"
+                            NOTIFY_COMMIT_SHA="$(Build.SourceVersion)"
+                          fi
+
+                          echo "##vso[task.setvariable variable=NOTIFY_COMMIT_SHA]$NOTIFY_COMMIT_SHA"
                         fi
                       displayName: Set NOTIFY_COMMIT_SHA
 
@@ -180,6 +209,7 @@ stages:
                         state: pending
                         description: "Deploy to ${{ parameters.environment }} started"
                         environment: ${{ parameters.environment }}
+                        stage_name: ${{ parameters.stage_name }}
 
                 - ${{ each param in parameters }}:
                     - ${{ if not(containsValue(parameters._expose_blacklist, param.key)) }}:
@@ -290,6 +320,7 @@ stages:
                         on_success: true
                         description: "Deploy to ${{ parameters.environment }} succeeded"
                         environment: ${{ parameters.environment }}
+                        stage_name: ${{ parameters.stage_name }}
 
                     - template: "../components/update-github-status.yml"
                       parameters:
@@ -297,3 +328,4 @@ stages:
                         on_failure: true
                         description: "Deploy to ${{ parameters.environment }} failed"
                         environment: ${{ parameters.environment }}
+                        stage_name: ${{ parameters.stage_name }}

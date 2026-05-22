@@ -14,6 +14,10 @@ parameters:
     displayName: Apigee environment deploying against
     type: string
     default: ""
+  - name: stage_name
+    displayName: Azure stage name for unique status context
+    type: string
+    default: ""
   # Been through a lot of pain to try to get these next two to work. Unfortunately due to how templates
   # are expanded, flagging like this is the only way I could find to get it to evaluate properly
   - name: on_success
@@ -33,10 +37,33 @@ steps:
          export NOTIFY_GITHUB_REPOSITORY=$(Build.Repository.Name)
       fi
 
+      BUILD_RESULTS_URL="$(System.CollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)&view=results"
+
+
       if [[ "$(NOTIFY_COMMIT_SHA)" =~ ^[0-9a-f]+$ ]]; then
-          echo "Reporting state ${{ parameters.state }} to ${NOTIFY_GITHUB_REPOSITORY}"
-          echo "##[debug] Hitting https://api.github.com/repos/${NOTIFY_GITHUB_REPOSITORY}/statuses/$(NOTIFY_COMMIT_SHA)"
-          curl --fail -q -X POST "https://api.github.com/repos/${NOTIFY_GITHUB_REPOSITORY}/statuses/$(NOTIFY_COMMIT_SHA)" -d '{"state": "${{ parameters.state }}", "context": "$(Build.DefinitionName) $environment", "description": "$description", "target_url": "https://dev.azure.com/NHSD-APIM/API Platform/_build/results?buildId=$(Build.BuildID)"}' --user $(GITHUB_USER):$(GITHUB_ACCESS_TOKEN)
+        if [[ -n "${environment}" && -n "${stage_name}" ]]; then
+          context_name="$(Build.DefinitionName)[${environment}][${stage_name}]"
+        elif [[ -n "${environment}" ]]; then
+          context_name="$(Build.DefinitionName)[${environment}]"
+        else
+          context_name="$(Build.DefinitionName)"
+        fi
+
+        echo "Reporting state ${{ parameters.state }} to ${NOTIFY_GITHUB_REPOSITORY}"
+        echo "##[debug] Hitting https://api.github.com/repos/${NOTIFY_GITHUB_REPOSITORY}/statuses/$(NOTIFY_COMMIT_SHA)"
+
+        payload=$(jq -nc \
+          --arg state "${{ parameters.state }}" \
+          --arg context "$context_name" \
+          --arg description "${description}" \
+          --arg target_url "${BUILD_RESULTS_URL}" \
+          '{state: $state, context: $context, description: $description, target_url: $target_url}')
+
+        curl --fail -q \
+          -H "Accept: application/vnd.github+json" \
+          -X POST "https://api.github.com/repos/${NOTIFY_GITHUB_REPOSITORY}/statuses/$(NOTIFY_COMMIT_SHA)" \
+          -d "${payload}" \
+          --user $(GITHUB_USER):$(GITHUB_ACCESS_TOKEN)
       else
         echo "##[warning]$(NOTIFY_COMMIT_SHA) doesn't look like a commit hash"
         echo "##[task.logissue type=warning]Task wasn't able to find the right commit sha value to notify github."
@@ -44,6 +71,7 @@ steps:
     env:
       description: ${{ parameters.description }}
       environment: ${{ parameters.environment }}
+      stage_name: ${{ parameters.stage_name }}
     displayName: "Notify GitHub: ${{ parameters.state }}"
     condition: |
       or(
