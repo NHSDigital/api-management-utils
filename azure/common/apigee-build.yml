@@ -164,7 +164,8 @@ jobs:
           versionSpec: "$(PY_VER)"
 
       - ${{ each cache_step in parameters.cache_steps }}:
-          - ${{ cache_step }}
+          - ${{ if not(startsWith(cache_step.task, 's3-cache-action@')) }}:
+              - ${{ cache_step }}
 
       - bash: |
           n=0
