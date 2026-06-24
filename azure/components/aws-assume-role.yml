@@ -37,7 +37,9 @@ steps:
       if [[ "$AWS_ACCOUNT" =~ ^(prod|dev)$ ]]; then
           echo "account is $AWS_ACCOUNT"
           account_id="$(aws ssm get-parameter --name /account-ids/$AWS_ACCOUNT --query Parameter.Value --output text)"
-          aws_role="arn:aws:iam::${account_id}:role/${aws_role}"
+          if [[ "${aws_role}" != arn:aws:iam:* ]]; then
+              aws_role="arn:aws:iam::${account_id}:role/${aws_role}"
+          fi
       fi
 
       if [[ "${aws_role}" != arn:aws:iam:* ]]; then
