@@ -34,9 +34,9 @@ steps:
       aws_role="$(ROLE)"
       echo "assume role: '${aws_role}'"
 
-      if [[ "${{ parameters.aws_account }}" =~ ^(prod|dev)$ ]]; then # NOSONAR
-          echo "account is ${{ parameters.aws_account }}" # NOSONAR
-          account_id="$(aws ssm get-parameter --name /account-ids/${{ parameters.aws_account }} --query Parameter.Value --output text)" # NOSONAR
+      if [[ "${ACCOUNT}" =~ ^(prod|dev)$ ]]; then
+          echo "account is ${ACCOUNT}"
+          account_id="$(aws ssm get-parameter --name /account-ids/${ACCOUNT} --query Parameter.Value --output text)"
           if [[ "${aws_role}" != arn:aws:iam:* ]]; then
               aws_role="arn:aws:iam::${account_id}:role/${aws_role}"
           fi
@@ -95,5 +95,6 @@ steps:
       fi
     env:
       PROFILE: ${{ parameters.profile }}
+      ACCOUNT: ${{ parameters.aws_account }}
     displayName: assume role
     condition: and(succeeded(), eq(variables['ROLE_EXISTS'], 'true'))
