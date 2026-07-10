@@ -34,9 +34,9 @@ steps:
       aws_role="$(ROLE)"
       echo "assume role: '${aws_role}'"
 
-      if [[ "$AWS_ACCOUNT" =~ ^(prod|dev)$ ]]; then
-          echo "account is $AWS_ACCOUNT"
-          account_id="$(aws ssm get-parameter --name /account-ids/$AWS_ACCOUNT --query Parameter.Value --output text)"
+      if [[ "${ACCOUNT}" =~ ^(prod|dev)$ ]]; then
+          echo "account is ${ACCOUNT}"
+          account_id="$(aws ssm get-parameter --name /account-ids/${ACCOUNT} --query Parameter.Value --output text)"
           if [[ "${aws_role}" != arn:aws:iam:* ]]; then
               aws_role="arn:aws:iam::${account_id}:role/${aws_role}"
           fi
@@ -46,7 +46,7 @@ steps:
           echo "check if role exists"
           # iam synchronisation issues can take a few to make the role appear
           for i in {1..15}; do
-            if aws iam get-role --role-name ${aws_role} > /dev/null; then
+            if aws iam get-role --role-name "${aws_role}" > /dev/null; then
               echo role exists
               sleep 2
               break
@@ -94,7 +94,7 @@ steps:
         sed -i "s#\[default\]#\[profile ${profile}\]#" ~/.aws/config
       fi
     env:
-      AWS_ACCOUNT: ${{ parameters.aws_account }}
       PROFILE: ${{ parameters.profile }}
+      ACCOUNT: ${{ parameters.aws_account }}
     displayName: assume role
     condition: and(succeeded(), eq(variables['ROLE_EXISTS'], 'true'))
