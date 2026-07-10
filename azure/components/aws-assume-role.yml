@@ -35,8 +35,8 @@ steps:
       echo "assume role: '${aws_role}'"
 
       if [[ "${{ parameters.aws_account }}" =~ ^(prod|dev)$ ]]; then # NOSONAR
-          echo "account is ${{ parameters.aws_account }}"
-          account_id="$(aws ssm get-parameter --name /account-ids/${{ parameters.aws_account }} --query Parameter.Value --output text)"
+          echo "account is ${{ parameters.aws_account }}" # NOSONAR
+          account_id="$(aws ssm get-parameter --name /account-ids/${{ parameters.aws_account }} --query Parameter.Value --output text)" # NOSONAR
           if [[ "${aws_role}" != arn:aws:iam:* ]]; then
               aws_role="arn:aws:iam::${account_id}:role/${aws_role}"
           fi
